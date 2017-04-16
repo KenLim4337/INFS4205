@@ -32,7 +32,20 @@ public class Test {
 	    return r;
     }
     
-	/*File reading*/
+	
+    /**
+     * Reads in an appropriately formatted text file and outputs a map of points with their respective IDs.
+     * Also checks that the input file is formatted appropriately in the form:
+     * 
+     * n
+     * id_1 x_1 y_1
+     * ...
+     * id_n x_n y_n
+     * 
+     * @param filename Directory of the input file
+     * @return A map with the point ID as key and X,Y Coordinates stored as an array in value
+     * @author Ken
+     */
     public static Map<Integer, int[]> readFile(String filename) {
     	
     	//Variables
@@ -117,7 +130,13 @@ public class Test {
     }
     
     
-    //Converts an input file into a readable string
+    /**
+     * Converts data from an input file into a readable string
+     * 
+     * @param input Map with an integer as key and an array of integers as values (output from readFile)
+     * @return Map from readFile in string form.
+     * @author Ken
+     */
     public static String inputToString(Map<Integer, int[]> input) {
     	String result = "";
     	
@@ -135,9 +154,21 @@ public class Test {
     
     
     
+    /**
+     * Reads in an appropriately formatted text file and outputs a list of queries.
+     * Also checks that the file follows the following format:
+     * 
+     * x_1 x'_1 y_1 y'_1
+     * 
+     * @param filename Directory of the input query file
+     * @return A list of queries in the form of Lists of integers
+     * @author Ken
+     */
     public static List<List<Integer>> readQueries(String filename) {
+    	//Variables
     	List<List<Integer>> result = new ArrayList<List<Integer>>();
-    	
+
+    	//Try/catch block for I/O Exception
     	try {
     		File file = new File (filename);
     		BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -150,8 +181,9 @@ public class Test {
 
     	    	List<Integer> built = new ArrayList<Integer>();
     	    	
+    	    	//Check each row only has 4 columns
     	    	if (temp.size() != 4) {
-    	    		System.out.print("File format error");
+    	    		System.out.print("File Format Error: Each row must have 4 columns");
     	    		reader.close();
     	    		return null;
     	    	}
@@ -160,28 +192,28 @@ public class Test {
     	    	try {
         	    	built.add(Integer.parseInt(tempArray[1]));
     			} catch (NumberFormatException e) {
-    				System.out.print("Format Error: " + e.getMessage());
+    				System.out.print("File Format Error: " + e.getMessage());
     			}
     	    	
     	    	tempArray = temp.get(1).split("_");
     	    	try {
     	    		built.add(Integer.parseInt(tempArray[1]));
     			} catch (NumberFormatException e) {
-    				System.out.print("Format Error: " + e.getMessage());
+    				System.out.print("File Format Error: " + e.getMessage());
     			}
     	    	
     	    	tempArray = temp.get(2).split("_");
     	    	try {
     	    		built.add(Integer.parseInt(tempArray[1]));
     			} catch (NumberFormatException e) {
-    				System.out.print("Format Error: " + e.getMessage());
+    				System.out.print("File Format Error: " + e.getMessage());
     			}
     	    	
     	    	tempArray = temp.get(3).split("_");
     	    	try {
     	    		built.add(Integer.parseInt(tempArray[1]));
     			} catch (NumberFormatException e) {
-    				System.out.print("Format Error: " + e.getMessage());
+    				System.out.print("File Format Error: " + e.getMessage());
     			}
     	    	
     	    	result.add(built);
@@ -199,7 +231,14 @@ public class Test {
     	return result;
     }
     
-    //Converts a queries file into a readable string
+    
+    /**
+     * Converts data from an queries file into a readable string
+     * 
+     * @param input A List of Lists of integers (output from readQueries)
+     * @return List from readQueries in string form.
+     * @author Ken
+     */
     public static String queriesToString(List<List<Integer>> input) {
     	String result = "";
     	
