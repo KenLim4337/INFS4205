@@ -49,3 +49,6 @@ fabric.properties
 .idea/*
 /out/*
 *.iml
+/bin/
+.classpath
+.project
