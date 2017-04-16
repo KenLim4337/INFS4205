@@ -15,7 +15,18 @@ public class Test {
 		System.out.println(r.getBounds());
 		
 		//Reading test code
-		readFile("");
+		Map<Integer, int[]> testRead = readFile(args[0]);
+		
+		Iterator it = testRead.entrySet().iterator();
+		
+		while (it.hasNext()){
+			Map.Entry pair = (Map.Entry) it.next();
+			int[] tempArray = (int[])pair.getValue();
+			String build = "X = " + tempArray[0] + ", Y = " + tempArray[1];
+			System.out.println("ID > " + pair.getKey() + " : " + build);
+			it.remove();
+		}
+		
 	}
     
 	
@@ -28,25 +39,77 @@ public class Test {
 	/*File reading*/
     public static Map<Integer, int[]> readFile(String filename) {
     	
+    	Integer size = 0;
     	Map<Integer, int[]> result = new HashMap<Integer, int[]>();
     	
     	try {
     		File file = new File (filename);
     		BufferedReader reader = new BufferedReader(new FileReader(file));
-    		System.out.println("\nFile loaded!");
+    		System.out.println("\nFile loaded");
     		
     		String line=null;
-    	    while((line=reader.readLine()) != null) {
+    	    
+    		if((line=reader.readLine()) != null) {
+    			try {
+    				size = Integer.parseInt(line);
+    			} catch (NumberFormatException e) {
+    				System.out.print("Format Error: " + e.getMessage());
+    			}
+    	    }
+    		
+    		while((line=reader.readLine()) != null) {
+    	    	List<String> temp = Arrays.asList(line.split(" "));
+    	    	int tempID = 0;
+    	    	int tempX = 0;
+    	    	int tempY = 0;
+    	    	
     	    	System.out.println(line);
+    	    	
+    	    	if (temp.size() != 3) {
+    	    		System.out.print("File format error");
+    	    		reader.close();
+    	    		return null;
+    	    	}
+    	    	
+    	    	
+    	    	String[] tempArray = temp.get(0).split("_");
+    	    	try {
+        	    	tempID = Integer.parseInt(tempArray[1]);
+    			} catch (NumberFormatException e) {
+    				System.out.print("Format Error: " + e.getMessage());
+    			}
+    	    	
+    	    	tempArray = temp.get(1).split("_");
+    	    	try {
+        	    	tempX = Integer.parseInt(tempArray[1]);
+    			} catch (NumberFormatException e) {
+    				System.out.print("Format Error: " + e.getMessage());
+    			}
+    	    	
+    	    	tempArray = temp.get(2).split("_");
+    	    	try {
+        	    	tempY = Integer.parseInt(tempArray[1]);
+    			} catch (NumberFormatException e) {
+    				System.out.print("Format Error: " + e.getMessage());
+    			}
+    	    	
+    	    	int[] tempCoords = {tempX, tempY};
+    	    	
+    	    	result.put(tempID, tempCoords);
+    	    	
     	    }
     	    
+    	    reader.close();
     	    
     	} catch (IOException e) {
     		System.out.print("I/O Exception: " + e.getMessage());
-    	} 
-    	
-    	
-    	
+    	} finally {
+    		if(result.size() != size) {
+	    		System.out.print("File format error");
+	    		return null;
+	    	}
+    		System.out.println("\nFile reading complete");
+    	}
     	
     	return result;
     }
