@@ -15,22 +15,22 @@ public class Mbr {
 	}
 	
 	public Mbr getParent() {
-		return parent;
+		return this.parent;
 	}
 	
 	public void setParent(Mbr newParent) {
-		parent = newParent;
+		this.parent = newParent;
 	}
 	
 	public List<Mbr> getChildren() {
-		return children;
+		return this.children;
 	}
 	
 	public List<Point> getLeaves() {
-		return leaves;
+		return this.leaves;
 	}
 	
 	public Rectangle getRectangle() {
-		return rect;
+		return this.rect;
 	}
 }
