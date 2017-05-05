@@ -1,36 +1,36 @@
 package test;
 
-import java.awt.Rectangle;
-import java.awt.Point;
 import java.io.*;
 import java.util.*;
 
 public class Test {
+    
+    public static List<Mbr> mbrList;
+    public static List<Node> inputPoints;
+    
 	public static void main(String [] args) {
 		System.out.println("Hello, world!");
-		Point p1 = new Point(1, 1);
-		Point p2 = new Point(0, 2);
-		Rectangle r = new Rectangle(p1);
-		r.add(p2);
-		System.out.println(r.getBounds());
 		
 		//Input Reading test code
-		Map<Integer, int[]> testRead = readFile(args[0]);
+		List<Node> inputPoints = readFile(args[0]);
 		
-		System.out.println(inputToString(testRead));
+		System.out.println(inputToString(inputPoints));
 		
 		//Query Reading test code
 		List<List<Integer>> testQueries = readQueries(args[1]);
 		
 		System.out.println(queriesToString(testQueries));
+		
+		
+		//Basic MBR test code
+		Mbr test = new Mbr(1);
+		
+		test.setLeaves(inputPoints);
+		test.generateBounds();
+		
+		System.out.println(test.toString());
+		
 	}
-    
-	
-	public Rectangle createRectangle(Point x, Point y) {
-	    Rectangle r = new Rectangle(x);
-	    r.add(y);
-	    return r;
-    }
     
 	
     /**
@@ -43,14 +43,14 @@ public class Test {
      * id_n x_n y_n
      * 
      * @param filename Directory of the input file
-     * @return A map with the point ID as key and X,Y Coordinates stored as an array in value
+     * @return List of nodes
      * @author Ken
      */
-    public static Map<Integer, int[]> readFile(String filename) {
+    public static List<Node> readFile(String filename) {
     	
     	//Variables
     	Integer size = 0;
-    	Map<Integer, int[]> result = new HashMap<Integer, int[]>();
+    	List<Node> result = new ArrayList<Node>();
     	
     	//Try/catch block for I/O Exception
     	try {
@@ -73,7 +73,7 @@ public class Test {
     		
     		while((line=reader.readLine()) != null) {
     	    	List<String> temp = Arrays.asList(line.split(" "));
-    	    	int tempID = 0;
+    	    	int tempId = 0;
     	    	int tempX = 0;
     	    	int tempY = 0;
     	    	
@@ -87,7 +87,7 @@ public class Test {
     	    	
     	    	String[] tempArray = temp.get(0).split("_");
     	    	try {
-        	    	tempID = Integer.parseInt(tempArray[1]);
+        	    	tempId = Integer.parseInt(tempArray[1]);
     			} catch (NumberFormatException e) {
     				System.out.print("File Format Error: " + e.getMessage());
     			}
@@ -106,9 +106,7 @@ public class Test {
     				System.out.print("File Format Error: " + e.getMessage());
     			}
     	    	
-    	    	int[] tempCoords = {tempX, tempY};
-    	    	
-    	    	result.put(tempID, tempCoords);
+    	    	result.add(new Node(tempId, tempX, tempY));
     	    	
     	    }
     	    
@@ -137,18 +135,13 @@ public class Test {
      * @return Map from readFile in string form.
      * @author Ken
      */
-    public static String inputToString(Map<Integer, int[]> input) {
-    	String result = "";
+    public static String inputToString(List<Node> input) {
+    	String result = "Input set: " + "\n";
+
+    	for(Node x : input) {
+    	    result += x.toString() + "\n";
+    	}
     	
-    	Iterator it = input.entrySet().iterator();
-		
-		while (it.hasNext()){
-			Map.Entry pair = (Map.Entry) it.next();
-			int[] tempArray = (int[])pair.getValue();
-			String build = "X = " + tempArray[0] + ", Y = " + tempArray[1];
-			result += ("ID > " + pair.getKey() + " : " + build + "\n");
-			it.remove();
-		}	
     	return result;
     }
     
