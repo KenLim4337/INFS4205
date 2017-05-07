@@ -229,8 +229,8 @@ public class Test {
     /**
      * Converts data from a range queries file into a readable string
      * 
-     * @param input A List of Lists of integers (output from readQueries)
-     * @return List from readQueries in string form.
+     * @param input A List of Lists of integers (output from readRangeQueries)
+     * @return List from readRangeQueries in string form.
      * @author Ken
      */
     public static String rangeQueryToString(List<List<Integer>> input) {
@@ -314,10 +314,10 @@ public class Test {
     
     
     /**
-     * Converts data from a range queries file into a readable string
+     * Converts data from a NN queries file into a readable string
      * 
-     * @param input A List of Lists of integers (output from readQueries)
-     * @return List from readQueries in string form.
+     * @param input A List of Lists of integers (output from readNNQueries)
+     * @return List from readNNQueries in string form.
      * @author Ken
      */
     public static String nnQueryToString(List<List<Integer>> input) {
