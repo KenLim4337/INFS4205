@@ -14,13 +14,15 @@ public class Test {
 		//Input Reading test code
 		List<Node> inputPoints = readFile(args[0]);
 		
-		System.out.println(inputToString(inputPoints));
+		//System.out.println(inputToString(inputPoints));
+		
+        System.out.println(sequentialScan(inputPoints) + " millis");
 		
 		//Query Reading test code
-		List<List<Integer>> testQueries = readQueries(args[1]);
-		
-		System.out.println(queriesToString(testQueries));
-		
+		List<List<Integer>> testQueries = readRangeQueries(args[1]);
+		System.out.println(rangeQueryToString(testQueries));
+        List<List<Integer>> testNNQueries = readNNQueries(args[2]);
+		System.out.println(nnQueryToString(testNNQueries));
 		
 		//Basic MBR test code
 		Mbr test = new Mbr(1);
@@ -120,7 +122,7 @@ public class Test {
 	    		System.out.print("File format error: Rows do not match provided number of points.");
 	    		return null;
 	    	}else {
-	    		System.out.println("\nFile reading complete");
+	    		System.out.println("\nInput file reading complete");
 	    	}
     	}
     	
@@ -146,9 +148,8 @@ public class Test {
     }
     
     
-    
     /**
-     * Reads in an appropriately formatted text file and outputs a list of queries.
+     * Reads in an appropriately formatted text file and outputs a list of range queries.
      * Also checks that the file follows the following format:
      * 
      * x_1 x'_1 y_1 y'_1
@@ -157,7 +158,7 @@ public class Test {
      * @return A list of queries in the form of Lists of integers
      * @author Ken
      */
-    public static List<List<Integer>> readQueries(String filename) {
+    public static List<List<Integer>> readRangeQueries(String filename) {
     	//Variables
     	List<List<Integer>> result = new ArrayList<List<Integer>>();
 
@@ -218,33 +219,139 @@ public class Test {
     	} catch (IOException e) {
     		System.out.print("I/O Exception: " + e.getMessage());
     	} finally {
-    		System.out.println("\nFile reading complete");
+    		System.out.println("\nRange query file reading complete");
     	}
     	
     	return result;
     }
-    
+   
     
     /**
-     * Converts data from an queries file into a readable string
+     * Converts data from a range queries file into a readable string
      * 
      * @param input A List of Lists of integers (output from readQueries)
      * @return List from readQueries in string form.
      * @author Ken
      */
-    public static String queriesToString(List<List<Integer>> input) {
-    	String result = "";
-    	
-		for(List<Integer> x : input) {
-			String builder = "";
-			
-			builder = "X = " + x.get(0) + ", X' = " + x.get(1) + ", Y = " + x.get(2) + ", Y' = " + x.get(3) + "\n";
-			
-			result+= builder;
-		}
-		
-    	return result;
+    public static String rangeQueryToString(List<List<Integer>> input) {
+        String result = "";
+        
+        for(List<Integer> x : input) {
+            String builder = "";
+            
+            builder = "X = " + x.get(0) + ", X' = " + x.get(1) + ", Y = " + x.get(2) + ", Y' = " + x.get(3) + "\n";
+            
+            result+= builder;
+        }
+        
+        return result;
     }
     
+    
+    /**
+     * Reads in an appropriately formatted text file and outputs a list of NN queries.
+     * Also checks that the file follows the following format:
+     * 
+     * x_1 y_1
+     * ...
+     * 
+     * @param filename Directory of the input query file
+     * @return A list of queries in the form of Lists of integers
+     * @author Ken
+     */
+    public static List<List<Integer>> readNNQueries(String filename) {
+        //Variables
+        List<List<Integer>> result = new ArrayList<List<Integer>>();
+
+        //Try/catch block for I/O Exception
+        try {
+            File file = new File (filename);
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            System.out.println("\nFile loaded");
+            
+            String line=null;
+            
+            while((line=reader.readLine()) != null) {
+                List<String> temp = Arrays.asList(line.split(" "));
+
+                List<Integer> built = new ArrayList<Integer>();
+                
+                //Check each row only has 4 columns
+                if (temp.size() != 2) {
+                    System.out.print("File Format Error: Each row must have 2 columns");
+                    reader.close();
+                    return null;
+                }
+                
+                String[] tempArray = temp.get(0).split("_");
+                try {
+                    built.add(Integer.parseInt(tempArray[1]));
+                } catch (NumberFormatException e) {
+                    System.out.print("File Format Error: " + e.getMessage());
+                }
+                
+                tempArray = temp.get(1).split("_");
+                try {
+                    built.add(Integer.parseInt(tempArray[1]));
+                } catch (NumberFormatException e) {
+                    System.out.print("File Format Error: " + e.getMessage());
+                }
+                
+                result.add(built);
+                
+            }
+            
+            reader.close();
+            
+        } catch (IOException e) {
+            System.out.print("I/O Exception: " + e.getMessage());
+        } finally {
+            System.out.println("\nNearest Neighbour query file reading complete");
+        }
+        
+        return result;
+    }
+    
+    
+    /**
+     * Converts data from a range queries file into a readable string
+     * 
+     * @param input A List of Lists of integers (output from readQueries)
+     * @return List from readQueries in string form.
+     * @author Ken
+     */
+    public static String nnQueryToString(List<List<Integer>> input) {
+        String result = "";
+        
+        for(List<Integer> x : input) {
+            String builder = "";
+            
+            builder = "X = " + x.get(0) + ", Y = " + x.get(1) + "\n";
+            
+            result+= builder;
+        }
+        
+        return result;
+    }
+    
+    
+    /**
+     * Reads the entire dataset once to establish the sequential scan benchmark
+     * 
+     * @param inputNodes the dataset read in from file
+     * @return long time to read the entire dataset in milliseconds
+     * @author Ken
+     */
+    public static long sequentialScan(List<Node> inputNodes) {
+        long startTime = System.currentTimeMillis();
+        
+        for(Node x:inputNodes) {
+            System.out.println(x.toString());
+        }
+        
+        long endTime = System.currentTimeMillis();
+        
+        return endTime-startTime;
+    }
     
 }
