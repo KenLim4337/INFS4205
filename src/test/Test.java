@@ -155,7 +155,7 @@ public class Test {
      * x_1 x'_1 y_1 y'_1
      * 
      * @param filename Directory of the input query file
-     * @return A list of queries in the form of Lists of integers
+     * @return List<List<Integer>> A list of queries in the form of Lists of integers
      * @author Ken
      */
     public static List<List<Integer>> readRangeQueries(String filename) {
@@ -256,7 +256,7 @@ public class Test {
      * ...
      * 
      * @param filename Directory of the input query file
-     * @return A list of queries in the form of Lists of integers
+     * @return List<List<Integer>> A list of queries in the form of Lists of integers
      * @author Ken
      */
     public static List<List<Integer>> readNNQueries(String filename) {
@@ -354,4 +354,28 @@ public class Test {
         return endTime-startTime;
     }
     
+    /**
+     * Returns all points given in a specified range
+     * 
+     * @param root the root Mbr of the dataset
+     * @param query range specified by the query
+     * @return List<Node> a list of all points within query range
+     * @author Ken
+     */
+    public static List<Node> rangeQuery(Mbr root, Mbr query) {
+        return new ArrayList<Node>();
+    }
+    
+    
+    /**
+     * Finds the nearest neighbor of the input point
+     * 
+     * @param root the root Mbr of the dataset
+     * @param point the point specified in the query
+     * @return Node nearest neighbor of query point
+     * @author Ken
+     */
+    public static Node nnQuery(Mbr root, Node point) {
+        return new Node(0, 0, 0);
+    }
 }
