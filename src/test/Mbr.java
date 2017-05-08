@@ -21,16 +21,16 @@ public class Mbr {
 	private List<Mbr> children;
 	
 	//Nodes in Mbr
-	private List<Node> leaves;
+	private List<Point> leaves;
 	
 	//Top L and Bottom R of Mbr in order of Top L (Min X, Min Y), Bot R (Max X, Max Y), bound nodes will have an id of -1
-	private List<Node> bounds;
+	private List<Point> bounds;
 	
 	public Mbr(int id) {
 	    this.id = id;
 	    this.children = new ArrayList<Mbr>();
-        this.leaves = new ArrayList<Node>();
-        this.bounds = new ArrayList<Node>();
+        this.leaves = new ArrayList<Point>();
+        this.bounds = new ArrayList<Point>();
 	}
 	
 	public Mbr getParent() {
@@ -49,15 +49,15 @@ public class Mbr {
 	    this.children = children;
 	}
 	
-	public List<Node> getLeaves() {
+	public List<Point> getLeaves() {
 		return this.leaves;
 	}
 	
-	public void setLeaves(List<Node> leaves) {
+	public void setLeaves(List<Point> leaves) {
 	    this.leaves = leaves;
 	}
 	
-	public List<Node> getBounds() {
+	public List<Point> getBounds() {
 	    return this.bounds;
 	}
 	
@@ -69,7 +69,7 @@ public class Mbr {
 	    int minX = Integer.MAX_VALUE;
 	    int minY = Integer.MAX_VALUE;
 	    
-	    for(Node x : leaves) {
+	    for(Point x : leaves) {
 	        if(x.getX() > maxX) {
 	            maxX = x.getX();
 	        } 
@@ -87,15 +87,15 @@ public class Mbr {
 	        }
 	    }
 	    
-	    this.bounds.add(new Node(-1, minX, minY));
-	    this.bounds.add(new Node(-1, maxX, maxY));
+	    this.bounds.add(new Point(-1, minX, minY));
+	    this.bounds.add(new Point(-1, maxX, maxY));
 	}
 	
 	@Override
     public String toString(){
         String temp =  "Mbr " + id + " With Bounds: \n";
         
-        for (Node x :bounds) {
+        for (Point x :bounds) {
             temp +=  ">" + x.toString().substring(9) + "\n";
         }
         

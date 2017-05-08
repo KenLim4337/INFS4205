@@ -1,6 +1,6 @@
 package test;
 
-public class Node {
+public class Point {
     
     /**
      * Holds an X and Y coordinate to represent points, also used to represent bounds of an Mbr
@@ -12,7 +12,7 @@ public class Node {
 	private int xCoord;
 	private int yCoord;
 	
-	public Node (int idnum, int x, int y) {
+	public Point (int idnum, int x, int y) {
 		this.id = idnum;
 		this.xCoord = x;
 		this.yCoord = y;

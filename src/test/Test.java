@@ -6,13 +6,13 @@ import java.util.*;
 public class Test {
     
     public static List<Mbr> mbrList;
-    public static List<Node> inputPoints;
+    public static List<Point> inputPoints;
     
 	public static void main(String [] args) {
 		System.out.println("Hello, world!");
 		
 		//Input Reading test code
-		List<Node> inputPoints = readFile(args[0]);
+		List<Point> inputPoints = readFile(args[0]);
 		
 		//System.out.println(inputToString(inputPoints));
 		
@@ -48,11 +48,11 @@ public class Test {
      * @return List of nodes
      * @author Ken
      */
-    public static List<Node> readFile(String filename) {
+    public static List<Point> readFile(String filename) {
     	
     	//Variables
     	Integer size = 0;
-    	List<Node> result = new ArrayList<Node>();
+    	List<Point> result = new ArrayList<Point>();
     	
     	//Try/catch block for I/O Exception
     	try {
@@ -108,7 +108,7 @@ public class Test {
     				System.out.print("File Format Error: " + e.getMessage());
     			}
     	    	
-    	    	result.add(new Node(tempId, tempX, tempY));
+    	    	result.add(new Point(tempId, tempX, tempY));
     	    	
     	    }
     	    
@@ -137,10 +137,10 @@ public class Test {
      * @return Map from readFile in string form.
      * @author Ken
      */
-    public static String inputToString(List<Node> input) {
+    public static String inputToString(List<Point> input) {
     	String result = "Input set: " + "\n";
 
-    	for(Node x : input) {
+    	for(Point x : input) {
     	    result += x.toString() + "\n";
     	}
     	
@@ -342,10 +342,10 @@ public class Test {
      * @return long time to read the entire dataset in milliseconds
      * @author Ken
      */
-    public static long sequentialScan(List<Node> inputNodes) {
+    public static long sequentialScan(List<Point> inputNodes) {
         long startTime = System.currentTimeMillis();
         
-        for(Node x:inputNodes) {
+        for(Point x:inputNodes) {
             System.out.println(x.toString());
         }
         
@@ -362,8 +362,8 @@ public class Test {
      * @return List<Node> a list of all points within query range
      * @author Ken
      */
-    public static List<Node> rangeQuery(Mbr root, Mbr query) {
-        return new ArrayList<Node>();
+    public static List<Point> rangeQuery(Mbr root, Mbr query) {
+        return new ArrayList<Point>();
     }
     
     
@@ -375,7 +375,7 @@ public class Test {
      * @return Node nearest neighbor of query point
      * @author Ken
      */
-    public static Node nnQuery(Mbr root, Node point) {
-        return new Node(0, 0, 0);
+    public static Point nnQuery(Mbr root, Point point) {
+        return new Point(0, 0, 0);
     }
 }
