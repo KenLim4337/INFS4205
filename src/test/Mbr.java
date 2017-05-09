@@ -11,26 +11,31 @@ public class Mbr {
      * @author Ken
      */
     
-    //Incremented during creation
+    //Incremented during creation, range queries will have an id of -2
     private int id;
     
     //Null if root
 	private Mbr parent;
 	
-	//Child Mbrs (Null for leaf Mbrs)
+	//Child Mbrs (Size = 0 for leaf Mbrs)
 	private List<Mbr> children;
 	
 	//Nodes in Mbr
 	private List<Point> leaves;
 	
-	//Top L and Bottom R of Mbr in order of Top L (Min X, Min Y), Bot R (Max X, Max Y), bound nodes will have an id of -1
-	private List<Point> bounds;
+	//Top right and bottom left bounds
+	private Point trBound;
+	
+	private Point blBound;
+	
+	
 	
 	public Mbr(int id) {
 	    this.id = id;
 	    this.children = new ArrayList<Mbr>();
         this.leaves = new ArrayList<Point>();
-        this.bounds = new ArrayList<Point>();
+        initBounds();
+        
 	}
 	
 	public Mbr getParent() {
@@ -55,45 +60,72 @@ public class Mbr {
 	
 	public void setLeaves(List<Point> leaves) {
 	    this.leaves = leaves;
+        updateBounds();
 	}
 	
-	public List<Point> getBounds() {
-	    return this.bounds;
+	public void addLeaf(Point leaf) {
+	    this.leaves.add(leaf);
+	    updateBounds();
 	}
 	
+	public Point getTR() {
+	    return this.trBound;
+	}
 	
-	//Generates the bounds for the Mbr
-	public void generateBounds() {
-	    int maxX = Integer.MIN_VALUE;
-	    int maxY = Integer.MIN_VALUE;
-	    int minX = Integer.MAX_VALUE;
-	    int minY = Integer.MAX_VALUE;
+	public Point getBL() {
+	    return this.blBound;
+	}
+	
+	//Initializes initial bounds
+	public void initBounds() {
+        int maxX = Integer.MIN_VALUE;
+        int maxY = Integer.MIN_VALUE;
+        int minX = Integer.MAX_VALUE;
+        int minY = Integer.MAX_VALUE;
 	    
+	    this.trBound = new Point(-1, maxX, minY);
+	    this.blBound = new Point(-1, minX, maxY);
+	}
+	
+	//Updates the bounds for an Mbr
+	public void updateBounds() {
 	    for(Point x : leaves) {
-	        if(x.getX() > maxX) {
-	            maxX = x.getX();
-	        } 
+	        if(x.getX() > trBound.getX()) {
+	            trBound.setX(x.getX());   
+	        }
 	        
-	        if (x.getX() < minX) {
-	            minX = x.getX();
+	        if (x.getX() < blBound.getX()) {
+	            blBound.setX(x.getX());
 	        } 
 
-	        if (x.getY() > maxY) {
-                maxY = x.getY();
-	        } 
+	        if (x.getY() > blBound.getY()) {
+                blBound.setY(x.getY());
+	        }
 
-	        if (x.getY() < minY) {
-	            minY = x.getY();
+	        if (x.getY() < trBound.getY()) {
+	            trBound.setY(x.getY());
 	        }
 	    }
-	    
-	    this.bounds.add(new Point(-1, minX, minY));
-	    this.bounds.add(new Point(-1, maxX, maxY));
 	}
+	
+	//Checks if an Mbr intersects another Mbr
+	public boolean checkIntersect() {
+	    
+	    
+	    
+	    
+	    return false;
+	}
+	
 	
 	@Override
     public String toString(){
         String temp =  "Mbr " + id + " With Bounds: \n";
+        
+        List<Point> bounds = new ArrayList<Point>();
+        
+        bounds.add(trBound);
+        bounds.add(blBound);
         
         for (Point x :bounds) {
             temp +=  ">" + x.toString().substring(9) + "\n";

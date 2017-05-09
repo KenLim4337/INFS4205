@@ -28,10 +28,15 @@ public class Test {
 		Mbr test = new Mbr(1);
 		
 		test.setLeaves(inputPoints);
-		test.generateBounds();
 		
 		System.out.println(test.toString());
 		
+		Mbr testQuery = new Mbr (-2);
+		testQuery.addLeaf(new Point(2, 10 , 10));
+		testQuery.addLeaf(new Point(2, 1 , 1));
+		
+		boolean x =  new Point(1,2,3).checkContains(testQuery);
+		System.out.println(x);
 	}
     
 	
@@ -362,7 +367,25 @@ public class Test {
      * @return List<Node> a list of all points within query range
      * @author Ken
      */
-    public static List<Point> rangeQuery(Mbr root, Mbr query) {
+    public static List<Point> rangeQuery(Mbr node, Mbr query) {
+        
+        if (node.getChildren().size() == 0) {
+            for(Point x:node.getLeaves()){
+                if(x.checkContains(query)) {
+                    //Add to result
+                    System.out.println(x.toString());
+                }
+            }
+        } else {
+            for(Mbr x: node.getChildren()) {
+                //if intersect
+                if(true) {
+                    rangeQuery(x, query);
+                }
+                //else do nothing
+            }
+        }
+        
         return new ArrayList<Point>();
     }
     

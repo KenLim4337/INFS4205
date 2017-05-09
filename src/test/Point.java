@@ -22,12 +22,34 @@ public class Point {
 		return this.xCoord;
 	}
 	
+	public void setX(int x) {
+	    this.xCoord = x;
+	}
+	
 	public int getY() {
         return this.yCoord;
     }
 	
+	public void setY(int y) {
+        this.yCoord = y;
+    }
+	
 	public int getID() {
 		return this.id;
+	}
+	
+	
+	//Checks if a rectangle contains this point
+	public boolean checkContains(Mbr rect) {
+	    Point tr = rect.getTR();
+	    Point bl = rect.getBL();
+	    
+	    if ((this.xCoord <= tr.getX() && this.xCoord >= bl.getX())
+	            && this.yCoord <= bl.getY() && this.yCoord >= tr.getY()) {
+	        return true;
+	    }
+	    //else
+	    return false;
 	}
 	
 	@Override
