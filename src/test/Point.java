@@ -40,7 +40,7 @@ public class Point {
 	
 	
 	//Checks if a rectangle contains this point
-	public boolean checkContains(Mbr rect) {
+	public boolean isIn(Mbr rect) {
 	    Point tr = rect.getTR();
 	    Point bl = rect.getBL();
 	    

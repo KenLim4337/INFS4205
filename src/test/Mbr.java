@@ -128,15 +128,9 @@ public class Mbr {
     public String toString(){
         String temp =  "Mbr " + id + " With Bounds: \n";
         
-        List<Point> bounds = new ArrayList<Point>();
-        
-        bounds.add(trBound);
-        bounds.add(blBound);
-        
-        for (Point x :bounds) {
-            temp +=  ">" + x.toString().substring(9) + "\n";
-        }
-        
+            temp +=  ">" + trBound.toString().substring(9) + "\n";
+            temp +=  ">" + blBound.toString().substring(9) + "\n";
+            
         return temp;
     }
 	

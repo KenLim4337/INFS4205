@@ -5,24 +5,24 @@ import java.util.*;
 
 public class Test {
     
-    public static List<Mbr> mbrList;
-    public static List<Point> inputPoints;
+    public static List<Mbr> mbrList = new ArrayList<Mbr>();
+    public static List<Point> inputPoints = new ArrayList<Point>();
     
 	public static void main(String [] args) {
 		System.out.println("Hello, world!");
 		
+		
+		
+		
+		/*
 		//Input Reading test code
 		List<Point> inputPoints = readFile(args[0]);
 		
 		//System.out.println(inputToString(inputPoints));
 		
-        System.out.println(sequentialScan(inputPoints) + " millis");
-		
 		//Query Reading test code
 		List<List<Integer>> testQueries = readRangeQueries(args[1]);
-		System.out.println(rangeQueryToString(testQueries));
         List<List<Integer>> testNNQueries = readNNQueries(args[2]);
-		System.out.println(nnQueryToString(testNNQueries));
 		
 		//Basic MBR test code
 		Mbr test = new Mbr(1);
@@ -35,8 +35,66 @@ public class Test {
 		testQuery.addLeaf(new Point(2, 10 , 10));
 		testQuery.addLeaf(new Point(2, 1 , 1));
 		
-		boolean x =  new Point(1,2,3).checkContains(testQuery);
+		boolean x =  new Point(1,2,3).isIn(test);
 		System.out.println(x);
+		
+		*/
+		
+		
+		Scanner scanner = new Scanner(System.in);
+		String[] command = new String[2];
+		
+
+	    /**
+	     * Keeps reads user input in command line and responds as appropriate
+	     * 
+	     * Commands:
+	     * exit -> Exits system with error code 0
+	     * test -> Runs sequential scan
+	     * load <file directory> -> loads specified file
+	     * range <file directory> -> loads specified range query file and runs it
+	     * nn <file directory> -> loads specified nn query file and runs it
+	     * 
+	     * @author Ken
+	     */
+		
+		while(true) {
+		    System.out.print("Command: ");
+		    
+		    command = scanner.nextLine().split(" ");
+		    
+		    //Add other stuff as stuff goes on
+		    //Runs sequential scan
+		    if (command[0].equals("test")) {
+		        if(inputPoints.isEmpty()) {
+		            System.out.println("No points loaded");
+		        } else {
+	                System.out.println(sequentialScan(inputPoints) + " millis");
+		        }
+		        
+		    //Loads file based on input
+		    } else if ((command[0].equals("load") && (!(command[1].isEmpty())))){
+		        inputPoints = readFile(command[1]);
+		        
+		    //Loads and runs range query based on input
+		    } else if ((command[0].equals("range") && (!(command[1].isEmpty())))) { 
+		        List<List<Integer>> testQueries = readRangeQueries(command[1]);
+		        System.out.println(rangeQueryToString(testQueries));
+		        
+		    //Loads and runs NN query based on input
+		    } else if ((command[0].equals("nn") && (!(command[1].isEmpty())))) { 
+		        List<List<Integer>> testNNQueries = readNNQueries(command[1]);
+                System.out.println(nnQueryToString(testNNQueries));
+                
+            //Exits app
+            } else if (command[0].equals("exit")) {
+                System.out.println("Exiting...");
+                System.exit(0);
+            } else {
+                System.out.println("Invalid command");
+            }
+		}
+		
 	}
     
 	
@@ -348,6 +406,7 @@ public class Test {
      * @author Ken
      */
     public static long sequentialScan(List<Point> inputNodes) {
+        
         long startTime = System.currentTimeMillis();
         
         for(Point x:inputNodes) {
@@ -371,8 +430,9 @@ public class Test {
         
         if (node.getChildren().size() == 0) {
             for(Point x:node.getLeaves()){
-                if(x.checkContains(query)) {
+                if(x.isIn(query)) {
                     //Add to result
+                    //Global result set?
                     System.out.println(x.toString());
                 }
             }
