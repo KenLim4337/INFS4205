@@ -60,12 +60,12 @@ public class Mbr {
 	
 	public void setLeaves(List<Point> leaves) {
 	    this.leaves = leaves;
-        updateBounds();
+        updateBounds(1);
 	}
 	
 	public void addLeaf(Point leaf) {
 	    this.leaves.add(leaf);
-	    updateBounds();
+	    updateBounds(0);
 	}
 	
 	public Point getTR() {
@@ -87,8 +87,14 @@ public class Mbr {
 	    this.blBound = new Point(-1, minX, maxY);
 	}
 	
-	//Updates the bounds for an Mbr
-	public void updateBounds() {
+	//Updates the bounds for an Mbr, parameter to check if called from add or set leaves
+	public void updateBounds(int z) {
+	    
+	    //Resets bounds first if a new set of points is used
+	    if(z == 1) {
+	        initBounds();
+	    }
+	    
 	    for(Point x : leaves) {
 	        if(x.getX() > trBound.getX()) {
 	            trBound.setX(x.getX());   
