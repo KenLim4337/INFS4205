@@ -459,6 +459,19 @@ public class Test {
      * @author Ken
      */
     public static Point nnQuery(Mbr root, Point point) {
+        /*
+         *  Pseudocode
+         * 
+         * - Make priority queue
+         * - Add root to pqueue
+         * - loop
+         * - pop pqueue
+         * - Add children of current to priority queue
+         * - If no child mbr, add points
+         * - If point, check if closer than current best, if closer, best = current
+         * - repeat until pbest is smaller than the smallest mindist in the list
+         */
+        
         return new Point(0, 0, 0);
     }
 }
