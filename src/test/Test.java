@@ -7,6 +7,10 @@ public class Test {
     
     public static List<Mbr> mbrList = new ArrayList<Mbr>();
     public static List<Point> inputPoints = new ArrayList<Point>();
+    public static PriorityQueue<Mbr> pq;
+    
+    //Result list
+    public static List<Point> result;
     
 	public static void main(String [] args) {
 		System.out.println("Hello, world!");
@@ -458,7 +462,7 @@ public class Test {
      * @return Node nearest neighbor of query point
      * @author Ken
      */
-    public static Point nnQuery(Mbr root, Point point) {
+    public static Point nnQuery(Mbr root, Point target) {
         /*
          *  Pseudocode
          * 
@@ -472,6 +476,46 @@ public class Test {
          * - repeat until pbest is smaller than the smallest mindist in the list
          */
         
-        return new Point(0, 0, 0);
+        //Set up priority queue
+        pq = new PriorityQueue<Mbr>(10, new Comparator<Mbr>() {
+            //Complete implementation after mindist is implemented
+            public int compare(Mbr o1, Mbr o2) {
+                /*
+                if (o1.minDist(target) < o2.minDist(target)) return -1;
+                if (o1.minDist(target) > o2.minDist(target)) return 1;
+                */
+                return 0;
+            }});
+        
+        Point bestPoint = null;
+        
+        pq.add(root);
+        
+        Mbr current = root;
+        
+        while(true /*!(current < next)*/) {
+
+            current = pq.poll();
+            
+            //If no children mbr, check points and determine best point
+            if(current.getChildren().size() == 0) {
+                for(Point x: current.getLeaves()) {
+                    if (true /*x.mindist < current best point mindist or best point is null*/) {
+                        
+                    }
+                }
+            } else {
+                for(Mbr x: current.getChildren()) {
+                    pq.add(x);
+                }
+            }
+
+            
+            
+            
+            return new Point(0, 0, 0);
+        }
+        
+        
     }
 }
