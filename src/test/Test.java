@@ -5,12 +5,12 @@ import java.util.*;
 
 public class Test {
     
-    public static List<Mbr> mbrList = new ArrayList<Mbr>();
-    public static List<Point> inputPoints = new ArrayList<Point>();
-    public static PriorityQueue<Mbr> pq;
+    public static List<MbrTest> mbrList = new ArrayList<MbrTest>();
+    public static List<PointTest> inputPoints = new ArrayList<PointTest>();
+    public static PriorityQueue<MbrTest> pq;
     
     //Result list
-    public static List<Point> result;
+    public static List<PointTest> result;
     
 	public static void main(String [] args) {
 		System.out.println("Hello, world!");
@@ -115,11 +115,11 @@ public class Test {
      * @return List of nodes
      * @author Ken
      */
-    public static List<Point> readFile(String filename) {
+    public static List<PointTest> readFile(String filename) {
     	
     	//Variables
     	Integer size = 0;
-    	List<Point> result = new ArrayList<Point>();
+    	List<PointTest> result = new ArrayList<PointTest>();
     	
     	//Try/catch block for I/O Exception
     	try {
@@ -175,7 +175,7 @@ public class Test {
     				System.out.print("File Format Error: " + e.getMessage());
     			}
     	    	
-    	    	result.add(new Point(tempId, tempX, tempY));
+    	    	result.add(new PointTest(tempId, tempX, tempY));
     	    	
     	    }
     	    
@@ -204,10 +204,10 @@ public class Test {
      * @return Map from readFile in string form.
      * @author Ken
      */
-    public static String inputToString(List<Point> input) {
+    public static String inputToString(List<PointTest> input) {
     	String result = "Input set: " + "\n";
 
-    	for(Point x : input) {
+    	for(PointTest x : input) {
     	    result += x.toString() + "\n";
     	}
     	
@@ -409,11 +409,11 @@ public class Test {
      * @return long time to read the entire dataset in milliseconds
      * @author Ken
      */
-    public static long sequentialScan(List<Point> inputNodes) {
+    public static long sequentialScan(List<PointTest> inputNodes) {
         
         long startTime = System.currentTimeMillis();
         
-        for(Point x:inputNodes) {
+        for(PointTest x:inputNodes) {
             System.out.println(x.toString());
         }
         
@@ -430,10 +430,10 @@ public class Test {
      * @return List<Node> a list of all points within query range
      * @author Ken
      */
-    public static List<Point> rangeQuery(Mbr node, Mbr query) {
+    public static List<PointTest> rangeQuery(MbrTest node, MbrTest query) {
         
         if (node.getChildren().size() == 0) {
-            for(Point x:node.getLeaves()){
+            for(PointTest x:node.getLeaves()){
                 if(x.isIn(query)) {
                     //Add to result
                     //Global result set?
@@ -441,7 +441,7 @@ public class Test {
                 }
             }
         } else {
-            for(Mbr x: node.getChildren()) {
+            for(MbrTest x: node.getChildren()) {
                 //if intersect
                 if(true) {
                     rangeQuery(x, query);
@@ -450,7 +450,7 @@ public class Test {
             }
         }
         
-        return new ArrayList<Point>();
+        return new ArrayList<PointTest>();
     }
     
     
@@ -462,7 +462,7 @@ public class Test {
      * @return Node nearest neighbor of query point
      * @author Ken
      */
-    public static Point nnQuery(Mbr root, Point target) {
+    public static PointTest nnQuery(MbrTest root, PointTest target) {
         /*
          *  Pseudocode
          * 
@@ -477,9 +477,9 @@ public class Test {
          */
         
         //Set up priority queue
-        pq = new PriorityQueue<Mbr>(10, new Comparator<Mbr>() {
+        pq = new PriorityQueue<MbrTest>(10, new Comparator<MbrTest>() {
             //Complete implementation after mindist is implemented
-            public int compare(Mbr o1, Mbr o2) {
+            public int compare(MbrTest o1, MbrTest o2) {
                 /*
                 if (o1.minDist(target) < o2.minDist(target)) return -1;
                 if (o1.minDist(target) > o2.minDist(target)) return 1;
@@ -487,11 +487,11 @@ public class Test {
                 return 0;
             }});
         
-        Point bestPoint = null;
+        PointTest bestPoint = null;
         
         pq.add(root);
         
-        Mbr current = root;
+        MbrTest current = root;
         
         while(true /*!(current < next)*/) {
 
@@ -499,13 +499,13 @@ public class Test {
             
             //If no children mbr, check points and determine best point
             if(current.getChildren().size() == 0) {
-                for(Point x: current.getLeaves()) {
+                for(PointTest x: current.getLeaves()) {
                     if (true /*x.mindist < current best point mindist or best point is null*/) {
                         
                     }
                 }
             } else {
-                for(Mbr x: current.getChildren()) {
+                for(MbrTest x: current.getChildren()) {
                     pq.add(x);
                 }
             }
@@ -513,7 +513,7 @@ public class Test {
             
             
             
-            return new Point(0, 0, 0);
+            return new PointTest(0, 0, 0);
         }
         
         

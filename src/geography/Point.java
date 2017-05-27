@@ -25,7 +25,41 @@ public class Point implements Comparable<Point> {
     }
     return false;
   }
+  
+  //Mindist for point
+  public double mindistPt(Point p) {
+      double result = Math.sqrt(Math.pow((this.getX()-p.getX()),2) + Math.pow((this.getY()-p.getY()),2));
+      return result;
+  }
 
+  //Mindist for Mbr
+  public double mindistMbr(Mbr m) {
+      Point tl = m.getTl();
+      Point br = m.getBr();
+      
+      if (m.contains(this)) {
+          return 0;
+      } else if (this.getX() <= br.getX() && this.getX() >= tl.getX()) {
+          if (this.getY() > tl.getY()) {
+              return Math.abs((this.getY() - tl.getY()));
+          } else {
+              return Math.abs((br.getY() - this.getY()));
+          }
+      } else if (this.getY() <= tl.getY() && this.getY() >= br.getY()) {
+          if (this.getX() > br.getX()) {
+              return Math.abs((this.getX() - br.getX()));
+          } else {
+              return Math.abs((tl.getX() - this.getX()));
+          }
+      } else {
+          //Diagonal, find closest point and mindist point
+          
+      }
+      
+      
+      return 0.1;
+  }
+  
   public int getX() {
     return x;
   }
@@ -53,10 +87,13 @@ public class Point implements Comparable<Point> {
     }
     return this.getX() - p.getX();
   }
+<<<<<<< HEAD
   
   public static Comparator<Point> compareX =
       (a, b) -> a.getX() < b.getX() ? -1 : a.getX() == b.getX() ? 0 : 1;
       
   public static Comparator<Point> compareY = 
       (a, b) -> a.getY() < b.getY() ? -1 : a.getY() == b.getY() ? 0 : 1;
+=======
+>>>>>>> 1218a5bb6b7f4e7bcd861248b33d289ed8770374
 }

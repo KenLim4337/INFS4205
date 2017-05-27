@@ -280,6 +280,12 @@ public class Mbr {
     return false;
   }
 
+  
+  //Intersection code
+  public boolean intersects(Mbr mbr) {
+      return false;
+  }
+  
   public Point getTl() {
     if (isLeaf) {
       return findTl(this.points);
