@@ -3,7 +3,7 @@ package test;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Mbr {
+public class MbrTest {
     
     /**
      * Mbrs. Contains an Mbrs parents, children Mbrs/Nodes and generates its bounds.
@@ -15,64 +15,64 @@ public class Mbr {
     private int id;
     
     //Null if root
-	private Mbr parent;
+	private MbrTest parent;
 	
 	//Child Mbrs (Size = 0 for leaf Mbrs)
-	private List<Mbr> children;
+	private List<MbrTest> children;
 	
 	//Nodes in Mbr
-	private List<Point> leaves;
+	private List<PointTest> leaves;
 	
 	//Top right and bottom left bounds
-	private Point trBound;
+	private PointTest trBound;
 	
-	private Point blBound;
+	private PointTest blBound;
 	
 	
 	
-	public Mbr(int id) {
+	public MbrTest(int id) {
 	    this.id = id;
-	    this.children = new ArrayList<Mbr>();
-        this.leaves = new ArrayList<Point>();
+	    this.children = new ArrayList<MbrTest>();
+        this.leaves = new ArrayList<PointTest>();
         initBounds();
         
 	}
 	
-	public Mbr getParent() {
+	public MbrTest getParent() {
 		return this.parent;
 	}
 	
-	public void setParent(Mbr newParent) {
+	public void setParent(MbrTest newParent) {
 		this.parent = newParent;
 	}
 	
-	public List<Mbr> getChildren() {
+	public List<MbrTest> getChildren() {
 		return this.children;
 	}
 	
-	public void setChildren(List<Mbr> children) {
+	public void setChildren(List<MbrTest> children) {
 	    this.children = children;
 	}
 	
-	public List<Point> getLeaves() {
+	public List<PointTest> getLeaves() {
 		return this.leaves;
 	}
 	
-	public void setLeaves(List<Point> leaves) {
+	public void setLeaves(List<PointTest> leaves) {
 	    this.leaves = leaves;
         updateBounds(1);
 	}
 	
-	public void addLeaf(Point leaf) {
+	public void addLeaf(PointTest leaf) {
 	    this.leaves.add(leaf);
 	    updateBounds(0);
 	}
 	
-	public Point getTR() {
+	public PointTest getTR() {
 	    return this.trBound;
 	}
 	
-	public Point getBL() {
+	public PointTest getBL() {
 	    return this.blBound;
 	}
 	
@@ -83,8 +83,8 @@ public class Mbr {
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
 	    
-	    this.trBound = new Point(-1, maxX, minY);
-	    this.blBound = new Point(-1, minX, maxY);
+	    this.trBound = new PointTest(-1, maxX, minY);
+	    this.blBound = new PointTest(-1, minX, maxY);
 	}
 	
 	//Updates the bounds for an Mbr, parameter to check if called from add or set leaves
@@ -95,7 +95,7 @@ public class Mbr {
 	        initBounds();
 	    }
 	    
-	    for(Point x : leaves) {
+	    for(PointTest x : leaves) {
 	        if(x.getX() > trBound.getX()) {
 	            trBound.setX(x.getX());   
 	        }
