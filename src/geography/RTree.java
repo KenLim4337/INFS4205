@@ -14,4 +14,12 @@ public class RTree {
     this.root = root;
   }
   
+  public int numPoints() {
+    return root.numChildren();
+  }
+  
+  public Mbr getRoot() {
+    return root;
+  }
+  
 }

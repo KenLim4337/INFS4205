@@ -1,5 +1,7 @@
 package geography;
 
+import java.util.Comparator;
+
 public class Point implements Comparable<Point> {
   private int x;
   private int y;
@@ -52,4 +54,9 @@ public class Point implements Comparable<Point> {
     return this.getX() - p.getX();
   }
   
+  public static Comparator<Point> compareX =
+      (a, b) -> a.getX() < b.getX() ? -1 : a.getX() == b.getX() ? 0 : 1;
+      
+  public static Comparator<Point> compareY = 
+      (a, b) -> a.getY() < b.getY() ? -1 : a.getY() == b.getY() ? 0 : 1;
 }

@@ -37,10 +37,38 @@ public class Mbr {
         handleOverflow();
       }
     } else {
-      // TODO: choose subtree, in intelligent way, not randomly
-      Random random = new Random(); // TODO: pick a better method
-      Mbr nextLevel = children.get(random.nextInt(children.size()));
-      nextLevel.insert(p);
+      perimiter = getPerimiter();
+      Point tl = getTl();
+      Point br = getBr();
+      int newPerimiter = Integer.MAX_VALUE;
+      Mbr bestChild = null;
+      for (Mbr child : children) {
+        int candidateLeft = child.getTl().getX();
+        int candidateTop = child.getTl().getY();
+        
+        int candidateRight = child.getBr().getX();
+        int candidateBottom = child.getBr().getY();
+        if (candidateLeft < this.getTl().getX()) {
+          tl.setX(candidateLeft);
+        }
+        if (candidateTop > this.getTl().getY()) {
+          tl.setY(candidateTop);
+        }
+        if (candidateRight > this.getBr().getX()) {
+          br.setX(candidateRight);
+        }
+        if (candidateBottom < this.getBr().getY()) {
+          br.setY(candidateBottom);
+        }
+        int horizontal = br.getX() - tl.getX();
+        int vertical = tl.getY() - br.getY();
+        int candidatePerimiter = (2 * horizontal) + (2 * vertical);
+        if (candidatePerimiter < newPerimiter) {
+          newPerimiter = candidatePerimiter;
+          bestChild = child;
+        }
+      }
+      bestChild.insert(p);
     }
     calculateCorners();
   }
@@ -89,8 +117,6 @@ public class Mbr {
     if (parent == null) {
       parent = new Mbr(null, false, tree);
     }
-    // TODO split this mbr into u and u' in a proper way
-    // current method is exactly in half, along x axis
     
     // If this is a leaf node, split it into two new leaf nodes and make those
     // children of the parent.
@@ -98,11 +124,8 @@ public class Mbr {
     Mbr mbr1 = new Mbr(parent, isLeaf, tree);
     Mbr mbr2 = new Mbr(parent, isLeaf, tree);
     if (isLeaf) {
-      Collections.sort(points);
-      List<Point> points1 = points.subList(0, MAX_CHILDREN / 2);
-      List<Point> points2 = points.subList(MAX_CHILDREN / 2, points.size());
-      mbr1.givePoints(points1);
-      mbr2.givePoints(points2);
+      sortLeaf(mbr1, mbr2, points);
+      
     } else {
       List<Mbr> children1 = children.subList(0, MAX_CHILDREN / 2);
       List<Mbr> children2 = children.subList(MAX_CHILDREN / 2, children.size());
@@ -122,7 +145,104 @@ public class Mbr {
     }
   }
   
+  private void sortLeaf(Mbr mbr1, Mbr mbr2, List<Point> points) {
+    points.sort(Point.compareX);
+    List<Integer> xValues = findSplit(points);
+    int bestI = xValues.get(0);
+    int newPerimiter = xValues.get(1);
+    
+    points.sort(Point.compareY);
+    List<Integer> yValues = findSplit(points);
+    if (yValues.get(1) < newPerimiter) {
+      newPerimiter = yValues.get(1);
+      bestI = yValues.get(0);
+    } else {
+      points.sort(Point.compareX);
+    }
+    
+    List<Point> points1 = points.subList(0, (int) Math.ceil(0.4 * MAX_CHILDREN));
+    List<Point> points2 = points.subList((int) Math.ceil(0.4 * MAX_CHILDREN), points.size());
+    mbr1.givePoints(points1);
+    mbr2.givePoints(points2);
+  }
+  /**
+   * 
+   * @param points
+   * @return A list of two integers. First value is the best split point,
+   *         second value is the perimiter for the best split.
+   */
+  private List<Integer> findSplit(List<Point> points) {
+    List<Integer> values = new ArrayList<Integer>();
+    int newPerimiter = Integer.MAX_VALUE;
+    int bestI = Integer.MAX_VALUE;
+    int minSize = (int) Math.ceil(0.4 * MAX_CHILDREN);
+    int perimiterSum = Integer.MAX_VALUE;
+    for (int i = minSize; i < MAX_CHILDREN + 1 - minSize; ++i) {
+      List<Point> points1 = points.subList(0, i);
+      List<Point> points2 = points.subList(i, points.size());
+      newPerimiter = perimiterSum(points1) + perimiterSum(points2);
+      if (newPerimiter < perimiterSum) {
+        perimiterSum = newPerimiter;
+        bestI = i;
+      }
+    }
+    values.add(bestI);
+    values.add(newPerimiter);
+    return values;
+  }
+  
+  private int perimiterSum(List<Point> points) {
+    Point tl = findTl(points);
+    Point br = findBr(points);
+    
+    int horizontal = br.getX() - tl.getX();
+    int vertical = tl.getY() - br.getY();
+    return (2 * horizontal) + (2 * vertical);
+  }
+  
+  public int getPerimiter() {
+    if (isLeaf) {
+      return perimiterSum(points);
+    }
+    tl = getTl();
+    br = getBr();
+    int horizontal = br.getX() - tl.getX();
+    int vertical = tl.getY() - br.getY();
+    return (2* horizontal) + (2* vertical);
+  }
+  
+  private static Point findTl(List<Point> points) {
+    int left = Integer.MAX_VALUE;
+    int top = Integer.MIN_VALUE;
+    for (Point p : points) {
+      if (p.getX() < left) {
+        left = p.getX();
+      }
+      if (p.getY() > top) {
+        top = p.getY();
+      }
+    }
+    return new Point(left, top, 0);
+  }
+  
+  private static Point findBr(List<Point> points) {
+    int right = Integer.MIN_VALUE;
+    int bottom = Integer.MAX_VALUE;
+    for (Point p : points) {
+      if (p.getX() > right) {
+        right = p.getX();
+      }
+      if (p.getY() < bottom) {
+        bottom = p.getY();
+      }
+    }
+    return new Point(right, bottom, 0);
+  }
+  
   void giveChildren(List<Mbr> mbrs) {
+    if (children == null) {
+      children = new ArrayList<Mbr>();
+    }
     children.addAll(mbrs);
   }
   
@@ -161,11 +281,29 @@ public class Mbr {
   }
 
   public Point getTl() {
-    return tl;
+    if (isLeaf) {
+      return findTl(this.points);
+    }
+    int left = Integer.MAX_VALUE;
+    int top = Integer.MIN_VALUE;
+    for (Mbr child : children) {
+      left = Math.min(left, child.getTl().getX());
+      top = Math.max(top, child.getTl().getY());
+    }
+    return new Point(left, top, 0);
   }
 
   public Point getBr() {
-    return br;
+    if (isLeaf) {
+      return findBr(this.points);
+    }
+    int right = Integer.MIN_VALUE;
+    int bottom = Integer.MAX_VALUE;
+    for (Mbr child : children) {
+      right = Math.max(right, child.getBr().getX());
+      bottom = Math.min(bottom, child.getBr().getY());
+    }
+    return new Point(right, bottom, 0);
   }
   
   public void setIsLeaf(boolean isLeaf) {
@@ -178,5 +316,37 @@ public class Mbr {
   
   void removeChild(Mbr child) {
     children.remove(child);
+  }
+  
+  protected int numChildren() {
+    if (isLeaf) {
+      return points.size();
+    }
+    int childrenCount = 0;
+    for (Mbr child : children) {
+      childrenCount = childrenCount + child.numChildren();
+    }
+    return childrenCount;
+  }
+  
+  public List<Point> getPoints() {
+    if (isLeaf) {
+      return points;
+    }
+    List<Point> allPoints = new ArrayList<Point>();
+    for (Mbr child: children) {
+      allPoints.addAll(child.getPoints());
+    }
+    return allPoints;
+  }
+  
+  public boolean isLeaf() {
+    return isLeaf;
+  }
+  public Mbr getParent() {
+    return parent;
+  }
+  public List<Mbr> getChildren() {
+    return children;
   }
 }
