@@ -1,6 +1,6 @@
 package geography;
 
-public class Point {
+public class Point implements Comparable<Point> {
   private int x;
   private int y;
   private int id;
@@ -42,6 +42,14 @@ public class Point {
   
   public int getId() {
     return id;
+  }
+  
+  @Override
+  public int compareTo(Point p) {
+    if (p == null) {
+      throw new NullPointerException();
+    }
+    return this.getX() - p.getX();
   }
   
 }

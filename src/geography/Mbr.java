@@ -1,6 +1,7 @@
 package geography;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -89,7 +90,7 @@ public class Mbr {
       parent = new Mbr(null, false, tree);
     }
     // TODO split this mbr into u and u' in a proper way
-    // current method is by order they were added
+    // current method is exactly in half, along x axis
     
     // If this is a leaf node, split it into two new leaf nodes and make those
     // children of the parent.
@@ -97,6 +98,7 @@ public class Mbr {
     Mbr mbr1 = new Mbr(parent, isLeaf, tree);
     Mbr mbr2 = new Mbr(parent, isLeaf, tree);
     if (isLeaf) {
+      Collections.sort(points);
       List<Point> points1 = points.subList(0, MAX_CHILDREN / 2);
       List<Point> points2 = points.subList(MAX_CHILDREN / 2, points.size());
       mbr1.givePoints(points1);
@@ -163,7 +165,6 @@ public class Mbr {
   }
 
   public Point getBr() {
-
     return br;
   }
   
