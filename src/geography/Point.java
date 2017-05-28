@@ -42,12 +42,12 @@ public class Point implements Comparable<Point> {
       if (m.contains(this)) {
           return 0;
       } else if (this.getX() <= br.getX() && this.getX() >= tl.getX()) {
-          if (this.getY() > tl.getY()) {
-              return Math.abs((this.getY() - tl.getY()));
+          if (this.getY() > br.getY()) {
+              return Math.abs((this.getY() - br.getY()));
           } else {
-              return Math.abs((br.getY() - this.getY()));
+              return Math.abs((tl.getY() - this.getY()));
           }
-      } else if (this.getY() <= tl.getY() && this.getY() >= br.getY()) {
+      } else if (this.getY() <= br.getY() && this.getY() >= tl.getY()) {
           if (this.getX() > br.getX()) {
               return Math.abs((this.getX() - br.getX()));
           } else {

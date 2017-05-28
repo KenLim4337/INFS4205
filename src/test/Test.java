@@ -52,8 +52,8 @@ public class Test {
 		
 		Mbr root = tree.getRoot();
 		
-		while(root.getChildren().size() != 0) {
-		    System.out.println(root.getChildren().get(0));
+		while(root.getLeaves().size() != 0) {
+		    System.out.println(root.getLeaves().get(0));
 		}
 		
 		
