@@ -24,8 +24,6 @@ public class Test {
 	    
 	    long startTime;
 	    long endTime;
-	    
-		System.out.println("Hello, world!");
 		
         tree = new RTree();
         
@@ -66,6 +64,8 @@ public class Test {
 		times = new ArrayList<Long>();
 		Scanner scanner = new Scanner(System.in);
 		String[] command = new String[2];
+		rangeOverall = new LinkedList<List<Point>>();
+		nnOverall = new LinkedList<List<Point>>();
 		*/
 
 	    /**
@@ -106,6 +106,7 @@ public class Test {
 		        //Init range result
 		        rangeResult = new LinkedList<Point>();
                 times.clear();
+                rangeOverall.clear();
                 
 		        //read queries, loop through queries, for each, append result to total results
 		        for(Mbr x: testRangeQueries) {
@@ -131,6 +132,7 @@ public class Test {
 		        //Read in queries
 		        List<Point> testNNQueries = readNNQueries(command[1]);
 		        times.clear();
+		        nnOverall.clear();
 		            //Iterate through all queries and run each query, adding results to the overall result list
 		            for(Point x: testNNQueries) {
 		                //Start timer
@@ -506,7 +508,7 @@ public class Test {
             }
         } else {
             for(Mbr x: node.getChildren()) {
-                //Checks if child mbr intersects the query range if yes run query on that too
+                //Checks if child mbr intersect s the query range if yes run query on that too
                 if(x.intersects(query)) {
                     rangeQuery(x, query);
                 }
@@ -587,4 +589,46 @@ public class Test {
         return bestPoints;
     }
  
+    /**
+     * Saves a text file containing range query results and times
+     * 
+     */
+    public static void saveRange(String filename) {
+        try {
+            PrintWriter writer = new PrintWriter(filename, "UTF-8"); 
+
+            //Go through each result
+            for (List<Point> x : rangeOverall) {
+                long time = times.get(rangeOverall.indexOf(x));
+                        
+                String build = "";
+                
+                //Build string for each result
+                for (Point y : x) {
+                   build += "x_" + y.getX() + " y_" + y.getY() + ", ";
+                }
+                
+                //Trim end and add time
+                build = build.substring(0, build.length()-2) + " Time: " + time;
+                
+                //Write to file
+                writer.write(build + "\n");
+                
+            }
+            
+        } catch (IOException x) {
+            System.err.format("IOException: %s%n", x);
+        }
+    }
+    
+    /**
+     * Saves a text file containing nn query results and times
+     * 
+     */
+    public static void saveNN(String filename) {
+        for (List<Point> x : nnOverall) {
+            
+        }
+    }
+    
 }
