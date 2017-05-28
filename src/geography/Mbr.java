@@ -253,14 +253,39 @@ public class Mbr {
       int n = this.getLeaves().size();
       int i = 8;
       int i1 = 12;
-      int bestPerim;
-      
+      int bestPerim = Integer.MAX_VALUE;
+      List<Comparator<Point>> comps = getPtComp();
       
       //Iterate through list of comparators?
       List<Point> leaf = this.getLeaves();
       
       List<Point> result1 = new ArrayList<Point>();
       List<Point> result2 = new ArrayList<Point>();
+      
+      for (Comparator<Point> comp : comps) {
+          
+          //Sort leaves based on comparator
+          leaf.sort(comp);
+          
+          List<Point> temp1 = leaf.subList(0, i);
+          
+          List<Point> temp2 = leaf.subList(i1, n);
+          
+          List<Integer> sides1 = findSides(temp1);
+                  
+          List<Integer> sides2 = findSides(temp2);      
+          
+          int tempPerim = ((sides1.get(0)*2)+(sides1.get(1)*2)) + ((sides2.get(0)*2)+(sides2.get(1)*2));
+          
+          
+          //Check numbers
+          if (tempPerim < bestPerim) {
+              result1 = temp1;
+              result2 = temp2;
+          }
+      }
+      
+      
       
       
       leaf.sort(Point.compareX);
@@ -323,6 +348,15 @@ public class Mbr {
       
       return res;
   }
+  
+  private List<Comparator<Point>> getPtComp() {
+      List<Comparator<Point>> result = new ArrayList<Comparator<Point>>();
+      result.add(Point.compareX);
+      result.add(Point.compareY);
+      
+      return result;
+  }
+  
   
   //Splits inner node in 2
   private List<Mbr> innerSplit() {
