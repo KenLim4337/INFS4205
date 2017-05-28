@@ -33,11 +33,17 @@ public class Test {
 		
 		System.out.println(nnQueryToString(nnQuery));
 		
+        List<Mbr> rangeQuery = readRangeQueries(args[1]);
+		
+        System.out.println(rangeQueryToString(rangeQuery));
+		
 		
 		//Breaking, null pointer exception after more than 3 put in tree
 		for(Point x : inputPoints) {
 		    tree.insert(x);
 		}
+		
+		
 		
 		
 		
@@ -81,6 +87,9 @@ public class Test {
 		    //Loads and runs range query based on input
 		    } else if ((command[0].equals("range") && (!(command[1].isEmpty())))) { 
 		        List<List<Integer>> rangeQueries = readRangeQueries(command[1]);
+		        
+		        //read queries, loop through queries, for each, append result to total results
+		        
 		        System.out.println(rangeQueryToString(testQueries));
 		        
 		    //Loads and runs NN query based on input
@@ -223,9 +232,9 @@ public class Test {
      * @return List<List<Integer>> A list of queries in the form of Lists of integers
      * @author Ken
      */
-    public static List<List<Integer>> readRangeQueries(String filename) {
+    public static List<Mbr> readRangeQueries(String filename) {
     	//Variables
-    	List<List<Integer>> result = new ArrayList<List<Integer>>();
+    	List<Mbr> result = new ArrayList<Mbr>();
 
     	//Try/catch block for I/O Exception
     	try {
@@ -275,7 +284,15 @@ public class Test {
     				System.out.print("File Format Error: " + e.getMessage());
     			}
     	    	
-    	    	result.add(built);
+    	    	List<Point> ranges = new ArrayList<Point>();
+    	    	
+    	    	//x,y
+    	    	ranges.add(new Point(built.get(0), built.get(2), -1));
+                
+    	    	//x1,y1
+    	    	ranges.add(new Point(built.get(1), built.get(3), -1));
+    	    	
+    	    	result.add(new Mbr(ranges));
     	    	
     	    }
     	    
@@ -298,13 +315,13 @@ public class Test {
      * @return List from readRangeQueries in string form.
      * @author Ken
      */
-    public static String rangeQueryToString(List<List<Integer>> input) {
+    public static String rangeQueryToString(List<Mbr> input) {
         String result = "";
         
-        for(List<Integer> x : input) {
+        for(Mbr x : input) {
             String builder = "";
             
-            builder = "X = " + x.get(0) + ", X' = " + x.get(1) + ", Y = " + x.get(2) + ", Y' = " + x.get(3) + "\n";
+            builder = x.toString() + "\n";
             
             result+= builder;
         }
