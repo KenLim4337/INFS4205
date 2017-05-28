@@ -59,9 +59,7 @@ public class Test {
         long endTime;
 		times = new ArrayList<Long>();
 		Scanner scanner = new Scanner(System.in);
-		String[] command = new String[2];
-		rangeOverall = new LinkedList<List<Point>>();
-		nnOverall = new LinkedList<List<Point>>();
+		String[] command = new String[7];
 		tree = new RTree();
 
 	    /**
@@ -103,24 +101,23 @@ public class Test {
 		        }
 		        
 		    //Loads and runs range query based on input
-		    } else if ((command[0].equals("range") && (!(command[1].isEmpty())))) { 
+		    } else if ((command[0].equals("range") && (!(command[1].isEmpty())) 
+		            && (!(command[2].isEmpty())))) { 
 		        List<Mbr> testRangeQueries = readRangeQueries(command[1]);
 		        //Init range result
-		        rangeResult = new LinkedList<Point>();
                 times.clear();
-                rangeOverall.clear();
+                rangeOverall = new LinkedList<List<Point>>();
                 
 		        //read queries, loop through queries, for each, append result to total results
 		        for(Mbr x: testRangeQueries) {
 		            //Clear range result
-		            rangeResult.clear();
+	                rangeResult = new LinkedList<Point>();
 		            //Start timer
 		            startTime = System.currentTimeMillis();
 		            rangeQuery(tree.getRoot(), x);
 		            //End timer
                     endTime = System.currentTimeMillis();
                     long resultTime = endTime - startTime;
-                    System.out.println(resultTime);
                     //Add runtime to list of times
                     times.add(resultTime);
                     //Adds range result to overall results
@@ -128,14 +125,16 @@ public class Test {
 		        }
 		        
 		        //Save file
+		        saveRange(command[2]);
 		        
 		        
 		    //Loads and runs NN query based on input
-		    } else if ((command[0].equals("nn") && (!(command[1].isEmpty())))) { 
+		    } else if ((command[0].equals("nn") && (!(command[1].isEmpty()))
+		            && (!(command[2].isEmpty())))) { 
 		        //Read in queries
 		        List<Point> testNNQueries = readNNQueries(command[1]);
 		        times.clear();
-		        nnOverall.clear();
+		        nnOverall = new LinkedList<List<Point>>();
 		            //Iterate through all queries and run each query, adding results to the overall result list
 		            for(Point x: testNNQueries) {
 		                //Start timer
@@ -144,7 +143,6 @@ public class Test {
 		                List<Point> Result = nnQuery(tree.getRoot(), x);
 		                //End timer
 		                endTime = System.currentTimeMillis();
-		                System.out.println(endTime - startTime);
 		                //Add runtime to list of times
 		                times.add(endTime-startTime);
 		                //Add result of individual query to overall list
@@ -152,7 +150,7 @@ public class Test {
 		            }
 		        
 		        //Save file
-		        
+		        saveNN(command[2]);
                 
             //Exits app
             } else if (command[0].equals("exit")) {
@@ -500,10 +498,11 @@ public class Test {
         long startTime = System.currentTimeMillis();
         
         for(Point x:inputNodes) {
-            
+            System.out.println(x.toString());
         }
         
         long endTime = System.currentTimeMillis();
+        
         long result = endTime-startTime;
         
         return result;
@@ -523,7 +522,6 @@ public class Test {
             for(Point x:node.getPoints()){
                 if(query.contains(x)) {
                     rangeResult.add(x);
-                    System.out.println(x.toString());
                 }
             }
         } else {
@@ -601,7 +599,9 @@ public class Test {
             } else {
                 //Have child, put all children into the priority queue
                 for(Mbr x: current.getChildren()) {
-                    pq.add(x);
+                    if(!(pq.contains(x))) {
+                        pq.add(x);
+                    }
                 }
             }
         }
@@ -620,7 +620,7 @@ public class Test {
             //Go through each result
             for (List<Point> x : rangeOverall) {
                 long time = times.get(rangeOverall.indexOf(x));
-                        
+                
                 String build = "";
                 
                 //Build string for each result
@@ -629,7 +629,9 @@ public class Test {
                 }
                 
                 //Trim end and add time
-                build = build.substring(0, build.length()-2) + " - Time: " + time;
+                if(build.length() > 0) {
+                    build = build.substring(0, build.length()-2) + " - Time: " + time;
+                }
                 
                 //Write to file
                 writer.write(build + "\n");
@@ -663,7 +665,9 @@ public class Test {
                 }
                 
                 //Trim end and add time
-                build = build.substring(0, build.length()-2) + " - Time: " + time;
+                if(build.length() > 0) {
+                    build = build.substring(0, build.length()-2) + " - Time: " + time;
+                }
                 
                 //Write to file
                 writer.write(build + "\n");
