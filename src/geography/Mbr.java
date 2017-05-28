@@ -16,14 +16,14 @@ public class Mbr {
   private boolean isLeaf;
   private Mbr parent;
   private static int MAX_CHILDREN = 3;
-  private int perimiter;
+  private int perimeter;
   
   public Mbr(Mbr parent, boolean isLeaf, RTree tree) {
     this.points = new ArrayList<Point>();
     this.parent = parent;
     this.isLeaf = isLeaf;
     this.tree = tree;
-    this.perimiter = 0;
+    this.perimeter = 0;
   }
   
   public Mbr(Mbr parent, RTree tree) {
@@ -161,10 +161,20 @@ public class Mbr {
   }
 
   
-  //Intersection code
+  //Intersection code, returns false if no intersect else true
   public boolean intersects(Mbr mbr) {
-      return false;
+      Point Destbr = mbr.getBr();
+      Point Desttl = mbr.getTl();
+      
+      //Check Y axis stuff
+      if(this.br.getX() < Desttl.getX() || Destbr.getX() < this.tl.getX() || 
+              this.br.getY() < Desttl.getY() || Destbr.getY() < this.tl.getY()) {
+          return false;
+      } else {
+          return true;
+      }
   }
+  
   
   public Point getTl() {
     return tl;
@@ -185,4 +195,14 @@ public class Mbr {
   void removeChild(Mbr child) {
     children.remove(child);
   }
+  
+  public List<Mbr> getChildren() {
+      return this.children;
+  }
+  
+  //Is points actual leaves
+  public List<Point> getLeaves() {
+      return this.points;
+  }
+  
 }

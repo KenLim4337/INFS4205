@@ -35,6 +35,8 @@ public class Point implements Comparable<Point> {
       Point tl = m.getTl();
       Point br = m.getBr();
       
+      
+      //Check if bottom is larger or top
       if (m.contains(this)) {
           return 0;
       } else if (this.getX() <= br.getX() && this.getX() >= tl.getX()) {
@@ -51,6 +53,8 @@ public class Point implements Comparable<Point> {
           }
       } else {
           //Diagonal, find closest point and mindist point
+          
+          
           
       }
       
@@ -85,4 +89,10 @@ public class Point implements Comparable<Point> {
     }
     return this.getX() - p.getX();
   }
+  
+  @Override
+  public String toString() {
+      return "ID: " + this.id + ", X: " + this.x + ", Y: " + this.y;
+  }
+  
 }

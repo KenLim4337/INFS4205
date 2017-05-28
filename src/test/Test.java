@@ -2,52 +2,42 @@ package test;
 
 import java.io.*;
 import java.util.*;
+import geography.*;
 
 public class Test {
     
-    public static List<MbrTest> mbrList = new ArrayList<MbrTest>();
-    public static List<PointTest> inputPoints = new ArrayList<PointTest>();
+    public static List<Mbr> mbrList = new ArrayList<Mbr>();
+    public static List<Point> inputPoints = new ArrayList<Point>();
+    public static RTree tree;
     public static PriorityQueue<MbrTest> pq;
     
-    //Result list
-    public static List<PointTest> result;
+    //Result storage
+    public static List<Point> rangeResult;
+    
+    //Overall results
+    public static List<List<Point>> rangeOverall;
+    public static List<List<Point>> nnOverall;
     
 	public static void main(String [] args) {
 		System.out.println("Hello, world!");
 		
+        tree = new RTree();
+        
+		inputPoints = readFile(args[0]);
+		
+		System.out.println(inputToString(inputPoints));
+		
+		//Breaking, null pointer exception after more than 3 put in tree
+		for(Point x : inputPoints) {
+		    tree.insert(x);
+		}
 		
 		
 		
 		/*
-		//Input Reading test code
-		List<Point> inputPoints = readFile(args[0]);
-		
-		//System.out.println(inputToString(inputPoints));
-		
-		//Query Reading test code
-		List<List<Integer>> testQueries = readRangeQueries(args[1]);
-        List<List<Integer>> testNNQueries = readNNQueries(args[2]);
-		
-		//Basic MBR test code
-		Mbr test = new Mbr(1);
-		
-		test.setLeaves(inputPoints);
-		
-		System.out.println(test.toString());
-		
-		Mbr testQuery = new Mbr (-2);
-		testQuery.addLeaf(new Point(2, 10 , 10));
-		testQuery.addLeaf(new Point(2, 1 , 1));
-		
-		boolean x =  new Point(1,2,3).isIn(test);
-		System.out.println(x);
-		
-		*/
-		
-		
 		Scanner scanner = new Scanner(System.in);
 		String[] command = new String[2];
-		
+		*/
 
 	    /**
 	     * Keeps reads user input in command line and responds as appropriate
@@ -62,6 +52,7 @@ public class Test {
 	     * @author Ken
 	     */
 		
+		/*
 		while(true) {
 		    System.out.print("Command: ");
 		    
@@ -82,7 +73,7 @@ public class Test {
 		        
 		    //Loads and runs range query based on input
 		    } else if ((command[0].equals("range") && (!(command[1].isEmpty())))) { 
-		        List<List<Integer>> testQueries = readRangeQueries(command[1]);
+		        List<List<Integer>> rangeQueries = readRangeQueries(command[1]);
 		        System.out.println(rangeQueryToString(testQueries));
 		        
 		    //Loads and runs NN query based on input
@@ -98,7 +89,7 @@ public class Test {
                 System.out.println("Invalid command");
             }
 		}
-		
+		*/
 	}
     
 	
@@ -115,11 +106,11 @@ public class Test {
      * @return List of nodes
      * @author Ken
      */
-    public static List<PointTest> readFile(String filename) {
+    public static List<Point> readFile(String filename) {
     	
     	//Variables
     	Integer size = 0;
-    	List<PointTest> result = new ArrayList<PointTest>();
+    	List<Point> result = new ArrayList<Point>();
     	
     	//Try/catch block for I/O Exception
     	try {
@@ -175,7 +166,7 @@ public class Test {
     				System.out.print("File Format Error: " + e.getMessage());
     			}
     	    	
-    	    	result.add(new PointTest(tempId, tempX, tempY));
+    	    	result.add(new Point(tempId, tempX, tempY));
     	    	
     	    }
     	    
@@ -204,10 +195,10 @@ public class Test {
      * @return Map from readFile in string form.
      * @author Ken
      */
-    public static String inputToString(List<PointTest> input) {
+    public static String inputToString(List<Point> input) {
     	String result = "Input set: " + "\n";
 
-    	for(PointTest x : input) {
+    	for(Point x : input) {
     	    result += x.toString() + "\n";
     	}
     	
@@ -427,30 +418,24 @@ public class Test {
      * 
      * @param root the root Mbr of the dataset
      * @param query range specified by the query
-     * @return List<Node> a list of all points within query range
      * @author Ken
      */
-    public static List<PointTest> rangeQuery(MbrTest node, MbrTest query) {
+    public static void rangeQuery(Mbr node, Mbr query) {
         
         if (node.getChildren().size() == 0) {
-            for(PointTest x:node.getLeaves()){
-                if(x.isIn(query)) {
-                    //Add to result
-                    //Global result set?
+            for(Point x:node.getLeaves()){
+                if(query.contains(x)) {
+                    rangeResult.add(x);
                     System.out.println(x.toString());
                 }
             }
         } else {
-            for(MbrTest x: node.getChildren()) {
-                //if intersect
-                if(true) {
+            for(Mbr x: node.getChildren()) {
+                if(x.intersects(query)) {
                     rangeQuery(x, query);
                 }
-                //else do nothing
             }
         }
-        
-        return new ArrayList<PointTest>();
     }
     
     
@@ -487,13 +472,15 @@ public class Test {
                 return 0;
             }});
         
-        PointTest bestPoint = null;
+        //List of best points, if lower than the first one, remake list, else append to list
+        PointTest bestPoints = null;
+        
         
         pq.add(root);
         
         MbrTest current = root;
         
-        while(true /*!(current < next)*/) {
+        while(true /*!(best.mindist < next.mindist)*/) {
 
             current = pq.poll();
             
