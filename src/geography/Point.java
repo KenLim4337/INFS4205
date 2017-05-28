@@ -34,7 +34,8 @@ public class Point implements Comparable<Point> {
   public double mindistMbr(Mbr m) {
       Point tl = m.getTl();
       Point br = m.getBr();
-      
+      Point tr = new Point (0, br.getX(), tl.getY());
+      Point bl = new Point (0, tl.getX(), br.getY());
       
       //Check if bottom is larger or top
       if (m.contains(this)) {
@@ -52,14 +53,21 @@ public class Point implements Comparable<Point> {
               return Math.abs((tl.getX() - this.getX()));
           }
       } else {
-          //Diagonal, find closest point and mindist point
-          
-          
-          
+          //Diagonal, find closest point and mindist to point
+          if (this.dominates(tl)) {
+              //Top left
+              return this.mindistPt(tl);
+          } else if (br.dominates(this)) {
+              //Bot right 
+              return this.mindistPt(br);
+          } else if (this.getX() > br.getX()) {
+              //Top Right
+              return this.mindistPt(tr);
+          } else {
+              //Bottom Left
+              return this.mindistPt(bl);
+          }
       }
-      
-      
-      return 0.1;
   }
   
   public int getX() {

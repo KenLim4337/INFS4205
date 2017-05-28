@@ -27,6 +27,9 @@ public class Test {
 		
 		System.out.println(inputToString(inputPoints));
 		
+		System.out.println(inputPoints.get(0).mindistPt(inputPoints.get(2)));
+		
+		
 		//Breaking, null pointer exception after more than 3 put in tree
 		for(Point x : inputPoints) {
 		    tree.insert(x);
