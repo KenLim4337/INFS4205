@@ -9,7 +9,7 @@ public class Test {
     public static List<Mbr> mbrList = new ArrayList<Mbr>();
     public static List<Point> inputPoints = new ArrayList<Point>();
     public static RTree tree;
-    public static PriorityQueue<MbrTest> pq;
+    public static PriorityQueue<Mbr> pq;
     
     //Result storage
     public static List<Point> rangeResult;
@@ -28,6 +28,10 @@ public class Test {
 		System.out.println(inputToString(inputPoints));
 		
 		System.out.println(inputPoints.get(0).mindistPt(inputPoints.get(2)));
+		
+		List<Point> nnQuery = readNNQueries(args[2]);
+		
+		System.out.println(nnQueryToString(nnQuery));
 		
 		
 		//Breaking, null pointer exception after more than 3 put in tree
@@ -169,7 +173,7 @@ public class Test {
     				System.out.print("File Format Error: " + e.getMessage());
     			}
     	    	
-    	    	result.add(new Point(tempId, tempX, tempY));
+    	    	result.add(new Point(tempX, tempY, tempId));
     	    	
     	    }
     	    
@@ -317,12 +321,12 @@ public class Test {
      * ...
      * 
      * @param filename Directory of the input query file
-     * @return List<List<Integer>> A list of queries in the form of Lists of integers
+     * @return List<Point> A list of queries in the form of points
      * @author Ken
      */
-    public static List<List<Integer>> readNNQueries(String filename) {
+    public static List<Point> readNNQueries(String filename) {
         //Variables
-        List<List<Integer>> result = new ArrayList<List<Integer>>();
+        List<Point> result = new ArrayList<Point>();
 
         //Try/catch block for I/O Exception
         try {
@@ -337,7 +341,7 @@ public class Test {
 
                 List<Integer> built = new ArrayList<Integer>();
                 
-                //Check each row only has 4 columns
+                //Check each row only has 2 columns
                 if (temp.size() != 2) {
                     System.out.print("File Format Error: Each row must have 2 columns");
                     reader.close();
@@ -358,7 +362,7 @@ public class Test {
                     System.out.print("File Format Error: " + e.getMessage());
                 }
                 
-                result.add(built);
+                result.add(new Point(built.get(0), built.get(1), -1));
                 
             }
             
@@ -381,13 +385,12 @@ public class Test {
      * @return List from readNNQueries in string form.
      * @author Ken
      */
-    public static String nnQueryToString(List<List<Integer>> input) {
+    public static String nnQueryToString(List<Point> input) {
         String result = "";
         
-        for(List<Integer> x : input) {
-            String builder = "";
+        for(Point x : input) {
             
-            builder = "X = " + x.get(0) + ", Y = " + x.get(1) + "\n";
+            String builder = x.toString() + "\n";
             
             result+= builder;
         }
@@ -425,6 +428,7 @@ public class Test {
      */
     public static void rangeQuery(Mbr node, Mbr query) {
         
+        //If leaf mbr, check if leaf points are in range, if yes add to results
         if (node.getChildren().size() == 0) {
             for(Point x:node.getLeaves()){
                 if(query.contains(x)) {
@@ -434,6 +438,7 @@ public class Test {
             }
         } else {
             for(Mbr x: node.getChildren()) {
+                //Checks if child mbr intersects the query range if yes run query on that too
                 if(x.intersects(query)) {
                     rangeQuery(x, query);
                 }
@@ -450,7 +455,7 @@ public class Test {
      * @return Node nearest neighbor of query point
      * @author Ken
      */
-    public static PointTest nnQuery(MbrTest root, PointTest target) {
+    public static PointTest nnQuery(Mbr root, Point target) {
         /*
          *  Pseudocode
          * 
@@ -465,37 +470,40 @@ public class Test {
          */
         
         //Set up priority queue
-        pq = new PriorityQueue<MbrTest>(10, new Comparator<MbrTest>() {
+        pq = new PriorityQueue<Mbr>(10, new Comparator<Mbr>() {
             //Complete implementation after mindist is implemented
-            public int compare(MbrTest o1, MbrTest o2) {
-                /*
-                if (o1.minDist(target) < o2.minDist(target)) return -1;
-                if (o1.minDist(target) > o2.minDist(target)) return 1;
-                */
+            public int compare(Mbr o1, Mbr o2) {
+                
+                if (target.mindistMbr(o1) < target.mindistMbr(o2)) return -1;
+                if (target.mindistMbr(o1) > target.mindistMbr(o2)) return 1;
+                
                 return 0;
             }});
         
         //List of best points, if lower than the first one, remake list, else append to list
-        PointTest bestPoints = null;
+        List<Point> bestPoints = new ArrayList<Point>();
         
+        //Init best distance as max at first
+        double bestmin = Double.MAX_VALUE;
         
         pq.add(root);
         
-        MbrTest current = root;
+        Mbr current = root;
         
         while(true /*!(best.mindist < next.mindist)*/) {
 
             current = pq.poll();
             
-            //If no children mbr, check points and determine best point
+            //If no children mbr (leaf mbr), check points and determine best point
             if(current.getChildren().size() == 0) {
-                for(PointTest x: current.getLeaves()) {
+                for(Point x: current.getLeaves()) {
                     if (true /*x.mindist < current best point mindist or best point is null*/) {
                         
                     }
                 }
             } else {
-                for(MbrTest x: current.getChildren()) {
+                //Have child, put all children into the priority queue
+                for(Mbr x: current.getChildren()) {
                     pq.add(x);
                 }
             }
