@@ -51,11 +51,8 @@ public class Test {
 		System.out.println("END");
 		
 		Mbr root = tree.getRoot();
-		
-		while(root.getLeaves().size() != 0) {
-		    System.out.println(root.getLeaves().get(0));
-		}
-		
+	
+		treeScanner(root);
 		
 		
 		//Actual code stuff ----------------------------------------------------------
@@ -161,6 +158,21 @@ public class Test {
 		*/
 	}
     
+	
+	//Scanner
+	public static void treeScanner (Mbr root) {
+	    if (root.isLeaf()) {
+	        for (Point x : root.getLeaves()) {
+	            System.out.println(x);
+	        } 
+	    } else {
+	        for (Mbr y: root.getChildren()) {
+	            treeScanner(y);
+	        }
+	    }
+	}
+	
+	
 	
     /**
      * Reads in an appropriately formatted text file and outputs a map of points with their respective IDs.

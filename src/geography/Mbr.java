@@ -22,6 +22,7 @@ public class Mbr {
   
   public Mbr(Mbr parent, boolean isLeaf, RTree tree) {
     this.points = new ArrayList<Point>();
+    this.children = new ArrayList<Mbr>();
     this.parent = parent;
     this.isLeaf = isLeaf;
     this.tree = tree;
@@ -205,16 +206,17 @@ public class Mbr {
         //innersplit
         split = this.innerSplit();
     }
-      
+    
+    //Root case
     if(this.parent == null) {
         //Create new parent for this
         Mbr newParent = new Mbr(null, false, tree);
-        //Make new parent the parent
-        newParent.giveChildren(split);
-        //Make the parent of splits this
-        for (Mbr x: split) {
+        //Give new parent the kids
+        for(Mbr x: split) {
+            newParent.addChild(x);
             x.setParent(newParent);
         }
+        
         //Update root
         tree.setRoot(newParent);
     } else {
@@ -323,10 +325,11 @@ public class Mbr {
       
       Mbr m1 = new Mbr (this, true, this.tree);
       m1.givePoints(result1);
+      m1.calculateCorners();
       
       Mbr m2 = new Mbr (this, true, this.tree);
       m2.givePoints(result2);
-      
+      m2.calculateCorners();
       
       List<Mbr> res = new ArrayList<Mbr>();
       res.add(m1);
@@ -441,12 +444,13 @@ public class Mbr {
           
       }
       
-      Mbr m1 = new Mbr (this, true, this.tree);
+      Mbr m1 = new Mbr (this, false, this.tree);
       m1.giveChildren(result1);
+      m1.calculateCorners();
       
-      Mbr m2 = new Mbr (this, true, this.tree);
+      Mbr m2 = new Mbr (this, false, this.tree);
       m2.giveChildren(result2);
-      
+      m2.calculateCorners();
       
       List<Mbr> res = new ArrayList<Mbr>();
       res.add(m1);
