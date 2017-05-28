@@ -370,7 +370,6 @@ public class Mbr {
     children.remove(child);
   }
   
-<<<<<<< HEAD
   protected int numChildren() {
     if (isLeaf) {
       return points.size();
@@ -402,10 +401,6 @@ public class Mbr {
   public List<Mbr> getChildren() {
     return children;
   }
-=======
-  public List<Mbr> getChildren() {
-      return this.children;
-  }
   
   //Is points actual leaves
   public List<Point> getLeaves() {
@@ -416,6 +411,4 @@ public class Mbr {
   public String toString() {
       return "Mbr: " + " TL = " + this.tl + ", BR = " + this.br;
   }
-  
->>>>>>> 79064838c863a5d95821aac08f0096885447eb8a
 }

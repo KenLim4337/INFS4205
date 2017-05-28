@@ -17,7 +17,14 @@ public class Test {
     public static List<List<Point>> rangeOverall;
     public static List<List<Point>> nnOverall;
     
+    //Records times for each query
+    public static List<Long> times;
+    
 	public static void main(String [] args) {
+	    
+	    long startTime;
+	    long endTime;
+	    
 		System.out.println("Hello, world!");
 		
         tree = new RTree();
@@ -40,13 +47,23 @@ public class Test {
 		//Breaking, null pointer exception after more than 3 put in tree
 		for(Point x : inputPoints) {
 		    tree.insert(x);
+		    System.out.println(x + " INSERTED");
+		}
+		
+		System.out.println("END");
+		
+		Mbr root = tree.getRoot();
+		
+		while(root.getChildren().size() != 0) {
+		    System.out.println(root.getChildren().get(0));
 		}
 		
 		
 		
-		
+		//Actual code stuff ----------------------------------------------------------
 		
 		/*
+		times = new ArrayList<Long>();
 		Scanner scanner = new Scanner(System.in);
 		String[] command = new String[2];
 		*/
@@ -85,16 +102,51 @@ public class Test {
 		        
 		    //Loads and runs range query based on input
 		    } else if ((command[0].equals("range") && (!(command[1].isEmpty())))) { 
-		        List<List<Integer>> rangeQueries = readRangeQueries(command[1]);
-		        
+		        List<Mbr> testRangeQueries = readRangeQueries(command[1]);
+		        //Init range result
+		        rangeResult = new LinkedList<Point>();
+                times.clear();
+                
 		        //read queries, loop through queries, for each, append result to total results
+		        for(Mbr x: testRangeQueries) {
+		            //Clear range result
+		            rangeResult.clear();
+		            //Start timer
+		            startTime = System.currentTimeMillis();
+		            rangeQuery(tree.getRoot(), x);
+		            //End timer
+                    endTime = System.currentTimeMillis();
+                    System.out.println(endTime - startTime);
+                    //Add runtime to list of times
+                    times.add(endTime-startTime);
+                    //Adds range result to overall results
+                    rangeOverall.add(rangeResult);
+		        }
 		        
-		        System.out.println(rangeQueryToString(testQueries));
+		        //Save file
+		        
 		        
 		    //Loads and runs NN query based on input
 		    } else if ((command[0].equals("nn") && (!(command[1].isEmpty())))) { 
-		        List<List<Integer>> testNNQueries = readNNQueries(command[1]);
-                System.out.println(nnQueryToString(testNNQueries));
+		        //Read in queries
+		        List<Point> testNNQueries = readNNQueries(command[1]);
+		        times.clear();
+		            //Iterate through all queries and run each query, adding results to the overall result list
+		            for(Point x: testNNQueries) {
+		                //Start timer
+		                startTime = System.currentTimeMillis();
+		                List<Point> Result = nnQuery(tree.getRoot(),x);
+		                //End timer
+		                endTime = System.currentTimeMillis();
+		                System.out.println(endTime - startTime);
+		                //Add runtime to list of times
+		                times.add(endTime-startTime);
+		                //Add result of individual query to overall list
+		                nnOverall.add(Result);
+		            }
+		        
+		        //Save file
+		        
                 
             //Exits app
             } else if (command[0].equals("exit")) {
@@ -422,12 +474,12 @@ public class Test {
      * @return long time to read the entire dataset in milliseconds
      * @author Ken
      */
-    public static long sequentialScan(List<PointTest> inputNodes) {
+    public static long sequentialScan(List<Point> inputNodes) {
         
         long startTime = System.currentTimeMillis();
         
-        for(PointTest x:inputNodes) {
-            System.out.println(x.toString());
+        for(Point x:inputNodes) {
+            
         }
         
         long endTime = System.currentTimeMillis();
@@ -445,8 +497,8 @@ public class Test {
     public static void rangeQuery(Mbr node, Mbr query) {
         
         //If leaf mbr, check if leaf points are in range, if yes add to results
-        if (node.getChildren().size() == 0) {
-            for(Point x:node.getLeaves()){
+        if (node.isLeaf()) {
+            for(Point x:node.getPoints()){
                 if(query.contains(x)) {
                     rangeResult.add(x);
                     System.out.println(x.toString());
@@ -468,10 +520,10 @@ public class Test {
      * 
      * @param root the root Mbr of the dataset
      * @param point the point specified in the query
-     * @return Node nearest neighbor of query point
+     * @return List of node nearest neighbor of query point
      * @author Ken
      */
-    public static PointTest nnQuery(Mbr root, Point target) {
+    public static List<Point> nnQuery(Mbr root, Point target) {
         /*
          *  Pseudocode
          * 
@@ -500,21 +552,28 @@ public class Test {
         List<Point> bestPoints = new ArrayList<Point>();
         
         //Init best distance as max at first
-        double bestmin = Double.MAX_VALUE;
+        double bestMin = Double.MAX_VALUE;
         
         pq.add(root);
         
         Mbr current = root;
         
-        while(true /*!(best.mindist < next.mindist)*/) {
+        //Loop while the current best 
+        while(bestMin > target.mindistMbr(current)) {
 
             current = pq.poll();
             
             //If no children mbr (leaf mbr), check points and determine best point
-            if(current.getChildren().size() == 0) {
-                for(Point x: current.getLeaves()) {
-                    if (true /*x.mindist < current best point mindist or best point is null*/) {
-                        
+            if(current.isLeaf()) {
+                for(Point x: current.getPoints()) {
+                    if (target.mindistPt(x) < bestMin) {
+                        //If a better point, clear list and add x
+                        bestPoints.clear();
+                        bestPoints.add(x);
+                        bestMin = target.mindistPt(x);
+                    } else if(target.mindistPt(x) == bestMin) {
+                        //If equal to current best, add to list
+                        bestPoints.add(x);
                     }
                 }
             } else {
@@ -523,13 +582,9 @@ public class Test {
                     pq.add(x);
                 }
             }
-
-            
-            
-            
-            return new PointTest(0, 0, 0);
         }
         
-        
+        return bestPoints;
     }
+ 
 }
