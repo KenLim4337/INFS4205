@@ -605,16 +605,18 @@ public class Test {
                 
                 //Build string for each result
                 for (Point y : x) {
-                   build += "x_" + y.getX() + " y_" + y.getY() + ", ";
+                   build += "id_" + y.getId() + " x_" + y.getX() + " y_" + y.getY() + ", ";
                 }
                 
                 //Trim end and add time
-                build = build.substring(0, build.length()-2) + " Time: " + time;
+                build = build.substring(0, build.length()-2) + " - Time: " + time;
                 
                 //Write to file
                 writer.write(build + "\n");
                 
             }
+            writer.write(" ");
+            writer.close();
             
         } catch (IOException x) {
             System.err.format("IOException: %s%n", x);
@@ -626,8 +628,31 @@ public class Test {
      * 
      */
     public static void saveNN(String filename) {
-        for (List<Point> x : nnOverall) {
+        try {
+            PrintWriter writer = new PrintWriter(filename, "UTF-8"); 
+
+            //Go through each result
+            for (List<Point> x : nnOverall) {
+                long time = times.get(nnOverall.indexOf(x));
+                        
+                String build = "";
+                
+                //Build string for each result
+                for (Point y : x) {
+                   build += "id_" + y.getId() + " x_" + y.getX() + " y_" + y.getY() + ", ";
+                }
+                
+                //Trim end and add time
+                build = build.substring(0, build.length()-2) + " - Time: " + time;
+                
+                //Write to file
+                writer.write(build + "\n");
+            }
+            writer.write(" ");
+            writer.close();
             
+        } catch (IOException x) {
+            System.err.format("IOException: %s%n", x);
         }
     }
     
