@@ -203,18 +203,33 @@ public class Mbr {
         split = this.leafSplit();
     } else {
         //innersplit
+        split = this.innerSplit();
     }
       
     if(this.parent == null) {
+        //Create new parent for this
         Mbr newParent = new Mbr(null, false, tree);
+        //Make new parent the parent
         newParent.giveChildren(split);
+        //Make the parent of splits this
+        for (Mbr x: split) {
+            x.setParent(newParent);
+        }
+        //Update root
         tree.setRoot(newParent);
     } else {
-        
+        Mbr parent = this.getParent();
+        parent.getChildren().remove(this);
+        for (Mbr x: split) {
+            parent.addChild(x);
+        }
+        if (parent.getChildren().size() > MAX_CHILDREN) {
+            parent.handleOverflow();
+        }
     }
     
-      
-      
+    /*  
+    
     // Create a new root if the current node being split is the root
     if (parent == null) {
       parent = new Mbr(null, false, tree);
@@ -245,6 +260,7 @@ public class Mbr {
         parent.handleOverflow();
       }
     }
+    */
   }
   
   //Splits this leaf Mbr in 2
@@ -282,12 +298,43 @@ public class Mbr {
           if (tempPerim < bestPerim) {
               result1 = temp1;
               result2 = temp2;
+          } else if (tempPerim == bestPerim) {
+              //if equal compare area
+              
+              List<Integer> lSides1 = findSides(result1);
+              
+              List<Integer> lSides2 = findSides(result2);     
+              
+              int lastArea = (lSides1.get(0) * lSides1.get(1)) + (lSides2.get(0) * lSides2.get(1));
+              
+              int thisArea = (sides1.get(0) * sides1.get(1)) + (sides2.get(0) * sides2.get(1));
+              
+              if (thisArea < lastArea) {
+                  result1 = temp1;
+                  result2 = temp2;
+              } else {
+                  //else do nothing, already have best split
+              }
+              
+          } else {
+              //else do nothing, already have the best split
           }
       }
       
+      Mbr m1 = new Mbr (this, true, this.tree);
+      m1.givePoints(result1);
+      
+      Mbr m2 = new Mbr (this, true, this.tree);
+      m2.givePoints(result2);
       
       
+      List<Mbr> res = new ArrayList<Mbr>();
+      res.add(m1);
+      res.add(m2);
       
+      return res;
+      
+      /*
       leaf.sort(Point.compareX);
       
       List<Point> sx1 = leaf.subList(0, i);
@@ -347,6 +394,7 @@ public class Mbr {
       res.add(m2);
       
       return res;
+      */
   }
   
   private List<Comparator<Point>> getPtComp() {
@@ -363,48 +411,108 @@ public class Mbr {
       int n = this.getChildren().size();
       int i = 8;
       int i1 = 12;
-      int bestPerim;
+      int bestPerim = Integer.MAX_VALUE;
+      List<Comparator<Mbr>> comps = getMbrComp();
       
       List<Mbr> children = this.getChildren();
       
       List<Mbr> result1 = new ArrayList<Mbr>();
       List<Mbr> result2 = new ArrayList<Mbr>();
       
-      children.sort(Mbr.compareX1);
-      
-      List<Mbr> sx1 = children.subList(0, i);
-      
-      List<Mbr> sx2 = children.subList(i1, n);
-      
-      int xp1 = findPerim(sx1);
-      
-      int xp2 = findPerim(sx2); 
-      
-  }
-  
-  private int findBetterPerim(List<Mbr> x) {
-      int left = Integer.MAX_VALUE;
-      int right = Integer.MIN_VALUE;
-      int top = Integer.MIN_VALUE;
-      int bottom = Integer.MAX_VALUE;
-      
-      for() {
+      for (Comparator<Mbr> compy: comps) {
+          children.sort(compy);
+          
+          List<Mbr> temp1 = children.subList(0, i);
+
+          List<Mbr> temp2 = children.subList(i1, n);
+
+          int p1 = findPerim(temp1);
+          
+          int p2 = findPerim(temp2); 
+          
+          int tempPerim = p1 + p2;
+          
+          if (tempPerim < bestPerim) {
+              result1 = temp1;
+              result2 = temp2;
+          } else {
+              //Already has the best
+          }
           
       }
       
+      Mbr m1 = new Mbr (this, true, this.tree);
+      m1.giveChildren(result1);
+      
+      Mbr m2 = new Mbr (this, true, this.tree);
+      m2.giveChildren(result2);
       
       
-      return 0;
+      List<Mbr> res = new ArrayList<Mbr>();
+      res.add(m1);
+      res.add(m2);
+      
+      return res;
   }
+  
+  private int findPerim(List<Mbr> x) {
+      int minX = Integer.MAX_VALUE;
+      int maxX = Integer.MIN_VALUE;
+      int minY = Integer.MAX_VALUE;
+      int maxY = Integer.MIN_VALUE;
+      
+      for(Mbr y: x) {
+          if(y.getBr().getX() > maxX) {
+              maxX = y.getBr().getX();   
+          }
+          
+          if (y.getTl().getX() < minX) {
+              minX = y.getTl().getX();
+          } 
+
+          if (y.getBr().getY() > maxY) {
+              maxY = y.getBr().getY();
+          }
+
+          if (y.getTl().getY() < minY) {
+              minY = y.getTl().getY();
+          }
+      }
+      
+      return (Math.abs(maxX - minX) * 2) + (Math.abs(maxY - minY) * 2);
+  }
+  
+  private List<Comparator<Mbr>> getMbrComp() {
+      
+      List<Comparator<Mbr>> comps = new ArrayList<Comparator<Mbr>>();
+      comps.add(Mbr.compareX1);
+      comps.add(Mbr.compareX2);
+      comps.add(Mbr.compareY1);
+      comps.add(Mbr.compareY2);
+      
+      return comps;
+  }
+  
+  
+  
+  
   
   //Compare lowest X
   public static Comparator<Mbr> compareX1 = (a, b) -> a.getTl().getX() < b.getTl().getX() ? -1 : 
       a.getTl().getX() == b.getTl().getX() ? 0 : 1;
   
+  //Compare highest X
+  public static Comparator<Mbr> compareX2 = (a, b) -> a.getBr().getX() < b.getBr().getX() ? -1 : 
+      a.getBr().getX() == b.getBr().getX() ? 0 : 1;
   
   //Compare lowest Y
   public static Comparator<Mbr> compareY1 = (a, b) -> a.getTl().getY() < b.getTl().getY() ? -1 : 
       a.getTl().getY() == b.getTl().getY() ? 0 : 1;
+  
+  //Compare highest Y
+  public static Comparator<Mbr> compareY2 = (a, b) -> a.getBr().getY() < b.getBr().getY() ? -1 : 
+      a.getBr().getY() == b.getBr().getY() ? 0 : 1;
+  
   
   private List<Integer> findSides(List<Point> x) {
       int minX = Integer.MAX_VALUE;
@@ -621,12 +729,16 @@ public class Mbr {
     this.isLeaf = isLeaf;
   }
   
-  void setParent(Mbr parent) {
+  public void setParent(Mbr parent) {
     this.parent = parent;
   }
   
-  void removeChild(Mbr child) {
+  public void removeChild(Mbr child) {
     children.remove(child);
+  }
+  
+  public void addChild(Mbr child) {
+      this.children.add(child);
   }
   
   protected int numChildren() {
