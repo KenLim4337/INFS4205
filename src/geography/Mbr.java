@@ -30,6 +30,12 @@ public class Mbr {
     this(parent, true, tree);
   }
 
+  //Mbr for range query purposes
+  public Mbr(List<Point> p) {
+      this.points = p;
+      rangeInit();
+  }
+  
   public void insert(Point p) {
     if (isLeaf) {
       points.add(p);
@@ -72,6 +78,36 @@ public class Mbr {
     }
     calculateCorners();
   }
+  
+  //Constructs bounds for a range query
+  void rangeInit() {
+      int maxX = Integer.MIN_VALUE;
+      int maxY = Integer.MIN_VALUE;
+      int minX = Integer.MAX_VALUE;
+      int minY = Integer.MAX_VALUE;
+      
+      for(Point x: this.points) {
+          if(x.getX() > maxX) {
+              maxX = x.getX();   
+          }
+          
+          if (x.getX() < minX) {
+              minX = x.getX();
+          } 
+
+          if (x.getY() > maxY) {
+              maxY = x.getY();
+          }
+
+          if (x.getY() < minY) {
+              minY = x.getY();
+          }
+      }
+      
+      this.br = new Point(maxX, maxY, -1);
+      this.tl = new Point(minX, minY, -1);      
+  }
+  
   
   void calculateCorners() {
     int left = Integer.MAX_VALUE;
@@ -280,6 +316,22 @@ public class Mbr {
     return false;
   }
 
+  
+  //Intersection code, returns false if no intersect else true
+  public boolean intersects(Mbr mbr) {
+      Point Destbr = mbr.getBr();
+      Point Desttl = mbr.getTl();
+      
+      //Check Y axis stuff
+      if(this.br.getX() < Desttl.getX() || Destbr.getX() < this.tl.getX() || 
+              this.br.getY() < Desttl.getY() || Destbr.getY() < this.tl.getY()) {
+          return false;
+      } else {
+          return true;
+      }
+  }
+  
+  
   public Point getTl() {
     if (isLeaf) {
       return findTl(this.points);
@@ -318,6 +370,7 @@ public class Mbr {
     children.remove(child);
   }
   
+<<<<<<< HEAD
   protected int numChildren() {
     if (isLeaf) {
       return points.size();
@@ -349,4 +402,20 @@ public class Mbr {
   public List<Mbr> getChildren() {
     return children;
   }
+=======
+  public List<Mbr> getChildren() {
+      return this.children;
+  }
+  
+  //Is points actual leaves
+  public List<Point> getLeaves() {
+      return this.points;
+  }
+  
+  @Override
+  public String toString() {
+      return "Mbr: " + " TL = " + this.tl + ", BR = " + this.br;
+  }
+  
+>>>>>>> 79064838c863a5d95821aac08f0096885447eb8a
 }

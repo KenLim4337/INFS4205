@@ -1,6 +1,6 @@
 package test;
 
-public class Point {
+public class PointTest {
     
     /**
      * Holds an X and Y coordinate to represent points, also used to represent bounds of an Mbr
@@ -12,7 +12,7 @@ public class Point {
 	private int xCoord;
 	private int yCoord;
 	
-	public Point (int idnum, int x, int y) {
+	public PointTest (int idnum, int x, int y) {
 		this.id = idnum;
 		this.xCoord = x;
 		this.yCoord = y;
@@ -40,9 +40,9 @@ public class Point {
 	
 	
 	//Checks if a rectangle contains this point
-	public boolean isIn(Mbr rect) {
-	    Point tr = rect.getTR();
-	    Point bl = rect.getBL();
+	public boolean isIn(MbrTest rect) {
+	    PointTest tr = rect.getTR();
+	    PointTest bl = rect.getBL();
 	    
 	    if ((this.xCoord <= tr.getX() && this.xCoord >= bl.getX())
 	            && this.yCoord <= bl.getY() && this.yCoord >= tr.getY()) {
