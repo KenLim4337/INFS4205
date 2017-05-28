@@ -42,6 +42,7 @@ public class Mbr {
   public void insert(Point p) {
     if (this.isLeaf) {
       this.points.add(p);
+      this.calculateCorners();
       if (this.points.size() > MAX_CHILDREN) {
         handleOverflow();
       }
@@ -96,7 +97,6 @@ public class Mbr {
       bestChild.insert(p);
       */
     }
-    calculateCorners();
   }
   
   //Calculates new perimiter given a new point to insert
@@ -216,6 +216,8 @@ public class Mbr {
             newParent.addChild(x);
             x.setParent(newParent);
         }
+
+        newParent.calculateCorners();
         
         //Update root
         tree.setRoot(newParent);
@@ -223,8 +225,12 @@ public class Mbr {
         Mbr parent = this.getParent();
         parent.getChildren().remove(this);
         for (Mbr x: split) {
+            if(parent.isLeaf && x.isLeaf) {
+                parent.setIsLeaf(false);
+            }
             parent.addChild(x);
         }
+        parent.calculateCorners();
         if (parent.getChildren().size() > MAX_CHILDREN) {
             parent.handleOverflow();
         }
@@ -704,6 +710,7 @@ public class Mbr {
   
   
   public Point getTl() {
+      /*
     if (isLeaf) {
       return findTl(this.points);
     }
@@ -714,9 +721,13 @@ public class Mbr {
       top = Math.max(top, child.getTl().getY());
     }
     return new Point(left, top, 0);
+    */
+    return this.tl;
   }
 
   public Point getBr() {
+      
+    /*
     if (isLeaf) {
       return findBr(this.points);
     }
@@ -727,6 +738,8 @@ public class Mbr {
       bottom = Math.min(bottom, child.getBr().getY());
     }
     return new Point(right, bottom, 0);
+    */
+    return this.br;
   }
   
   public void setIsLeaf(boolean isLeaf) {
@@ -768,7 +781,7 @@ public class Mbr {
   }
   
   public boolean isLeaf() {
-    return isLeaf;
+    return this.isLeaf;
   }
   public Mbr getParent() {
     return parent;

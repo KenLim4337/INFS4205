@@ -22,10 +22,8 @@ public class Test {
     
 	public static void main(String [] args) {
 	    
-	    long startTime;
-	    long endTime;
-		
-        tree = new RTree();
+		/*
+        
         
 		inputPoints = readFile(args[0]);
 		
@@ -53,17 +51,18 @@ public class Test {
 		Mbr root = tree.getRoot();
 	
 		treeScanner(root);
-		
+		*/
 		
 		//Actual code stuff ----------------------------------------------------------
-		
-		/*
+
+        long startTime;
+        long endTime;
 		times = new ArrayList<Long>();
 		Scanner scanner = new Scanner(System.in);
 		String[] command = new String[2];
 		rangeOverall = new LinkedList<List<Point>>();
 		nnOverall = new LinkedList<List<Point>>();
-		*/
+		tree = new RTree();
 
 	    /**
 	     * Keeps reads user input in command line and responds as appropriate
@@ -78,7 +77,7 @@ public class Test {
 	     * @author Ken
 	     */
 		
-		/*
+		
 		while(true) {
 		    System.out.print("Command: ");
 		    
@@ -97,6 +96,12 @@ public class Test {
 		    } else if ((command[0].equals("load") && (!(command[1].isEmpty())))){
 		        inputPoints = readFile(command[1]);
 		        
+		        //Builds tree
+		        for(Point x : inputPoints) {
+		            tree.insert(x);
+		            System.out.println("Point > " + x + "  - INSERTED!");
+		        }
+		        
 		    //Loads and runs range query based on input
 		    } else if ((command[0].equals("range") && (!(command[1].isEmpty())))) { 
 		        List<Mbr> testRangeQueries = readRangeQueries(command[1]);
@@ -114,9 +119,10 @@ public class Test {
 		            rangeQuery(tree.getRoot(), x);
 		            //End timer
                     endTime = System.currentTimeMillis();
-                    System.out.println(endTime - startTime);
+                    long resultTime = endTime - startTime;
+                    System.out.println(resultTime);
                     //Add runtime to list of times
-                    times.add(endTime-startTime);
+                    times.add(resultTime);
                     //Adds range result to overall results
                     rangeOverall.add(rangeResult);
 		        }
@@ -134,7 +140,8 @@ public class Test {
 		            for(Point x: testNNQueries) {
 		                //Start timer
 		                startTime = System.currentTimeMillis();
-		                List<Point> Result = nnQuery(tree.getRoot(),x);
+		                
+		                List<Point> Result = nnQuery(tree.getRoot(), x);
 		                //End timer
 		                endTime = System.currentTimeMillis();
 		                System.out.println(endTime - startTime);
@@ -155,7 +162,7 @@ public class Test {
                 System.out.println("Invalid command");
             }
 		}
-		*/
+		
 	}
     
 	
@@ -497,8 +504,9 @@ public class Test {
         }
         
         long endTime = System.currentTimeMillis();
+        long result = endTime-startTime;
         
-        return endTime-startTime;
+        return result;
     }
     
     /**
@@ -573,7 +581,7 @@ public class Test {
         Mbr current = root;
         
         //Loop while the current best 
-        while(bestMin > target.mindistMbr(current)) {
+        while(bestMin > target.mindistMbr(current) && (pq.size() > 0)) {
 
             current = pq.poll();
             
