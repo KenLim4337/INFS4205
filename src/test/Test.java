@@ -6,7 +6,6 @@ import geography.*;
 
 public class Test {
     
-    public static List<Mbr> mbrList = new ArrayList<Mbr>();
     public static List<Point> inputPoints = new ArrayList<Point>();
     public static RTree tree;
     public static PriorityQueue<Mbr> pq;
