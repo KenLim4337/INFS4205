@@ -17,8 +17,6 @@ public class Mbr {
   private boolean isLeaf;
   private Mbr parent;
   private static int MAX_CHILDREN = 110;
-  private int perimiter;
-  
   public Mbr(Mbr parent, boolean isLeaf, RTree tree) {
     this.points = new ArrayList<Point>();
     this.children = new ArrayList<Mbr>();
@@ -27,7 +25,6 @@ public class Mbr {
     this.parent = parent;
     this.isLeaf = isLeaf;
     this.tree = tree;
-    this.perimiter = 0;
   }
   
   public Mbr(Mbr parent, RTree tree) {

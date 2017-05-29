@@ -55,13 +55,13 @@ public class Point implements Comparable<Point> {
           }
       } else {
           //Diagonal, find closest point and mindist to point
-          if (this.dominates(tl)) {
+          if (this.x < tl.getX() && this.y < tl.getY()) {
               //Top left
               return this.mindistPt(tl);
-          } else if (br.dominates(this)) {
+          } else if (this.x > br.getX() && this.y > br.getY()) {
               //Bot right 
               return this.mindistPt(br);
-          } else if (this.getX() > br.getX()) {
+          } else if (this.x > br.getX() && this.y < tl.getY()) {
               //Top Right
               return this.mindistPt(tr);
           } else {

@@ -66,7 +66,6 @@ public class Test {
 		        //Builds tree
 		        for(Point x : inputPoints) {
 		            tree.insert(x);
-		            System.out.println("Point > " + x + "  - INSERTED!");
 		        }
 		        
 		    //Loads and runs range query based on input
@@ -564,7 +563,7 @@ public class Test {
         Mbr current = root;
         
         //Loop while the current best 
-        while(bestMin > target.mindistMbr(current) && current != null) {
+        while(bestMin > target.mindistMbr(current) && pq.size() > 0) {
             
             current = pq.poll();
             
