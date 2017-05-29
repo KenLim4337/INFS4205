@@ -535,7 +535,6 @@ public class Test {
         
         //If leaf mbr, check if leaf points are in range, if yes add to results
         if (node.isLeaf()) {
-            System.out.println("Finding");
             for(Point x: node.getPoints()){
                 if(query.contains(x)) {
                     rangeResult.add(x);
