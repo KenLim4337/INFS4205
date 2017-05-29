@@ -16,13 +16,14 @@ public class Mbr {
   private List<Mbr> children;
   private boolean isLeaf;
   private Mbr parent;
-  //512b disc block size (hard drives) /25b per mbr = 20
-  private static int MAX_CHILDREN = 19;
+  private static int MAX_CHILDREN = 110;
   private int perimiter;
   
   public Mbr(Mbr parent, boolean isLeaf, RTree tree) {
     this.points = new ArrayList<Point>();
     this.children = new ArrayList<Mbr>();
+    this.tl = new Point (-1, Integer.MAX_VALUE, Integer.MAX_VALUE);
+    this.br = new Point (-1, Integer.MIN_VALUE, Integer.MIN_VALUE);
     this.parent = parent;
     this.isLeaf = isLeaf;
     this.tree = tree;
@@ -42,7 +43,7 @@ public class Mbr {
   public void insert(Point p) {
     if (this.isLeaf) {
       this.points.add(p);
-      this.calculateCorners();
+      this.updateCorners(p);
       if (this.points.size() > MAX_CHILDREN) {
         handleOverflow();
       }
@@ -57,7 +58,6 @@ public class Mbr {
               bestPerim = child.calcPerim(p);
               bestChild = child;
           }
-          
       }
       
       bestChild.insert(p);
@@ -156,11 +156,13 @@ public class Mbr {
   }
   
   
+  //Improve
   void calculateCorners() {
     int left = Integer.MAX_VALUE;
     int right = Integer.MIN_VALUE;
     int top = Integer.MIN_VALUE;
     int bottom = Integer.MAX_VALUE;
+    
     if (isLeaf) {
       for (Point p : points) {
         if (p.getX() < left) {
@@ -191,9 +193,40 @@ public class Mbr {
         }
       }
     }
-    tl = new Point(left, top, 0);
-    br = new Point(right, bottom, 0);
+    this.tl = new Point(left, top, 0);
+    this.br = new Point(right, bottom, 0);
   }
+  
+  private void updateCorners(Point p) {
+      if(p.getX() < this.tl.getX()) {
+          this.tl.setX(p.getX());
+      }
+      if(p.getX() > this.br.getX()) {
+          this.br.setX(p.getX());
+      }
+      if(p.getY() < this.tl.getY()) {
+          this.tl.setY(p.getY());
+      }
+      if(p.getY() > this.br.getY()) {
+          this.br.setY(p.getY());
+      }
+  }
+  
+  private void updateCornersM(Mbr m) {
+      if(m.getTl().getX() < this.tl.getX()) {
+          this.tl.setX(m.getTl().getX());
+      }
+      if(m.getBr().getX() > this.br.getX()) {
+          this.br.setX(m.getBr().getX());
+      }
+      if(m.getTl().getY() < this.tl.getY()) {
+          this.tl.setY(m.getTl().getY());
+      }
+      if(m.getBr().getY() > this.br.getY()) {
+          this.br.setY(m.getBr().getY());
+      }
+  }
+  
   
   private void handleOverflow() {
     
@@ -215,9 +248,9 @@ public class Mbr {
         for(Mbr x: split) {
             newParent.addChild(x);
             x.setParent(newParent);
+            newParent.updateCornersM(x);
         }
 
-        newParent.calculateCorners();
         
         //Update root
         tree.setRoot(newParent);
@@ -229,8 +262,10 @@ public class Mbr {
                 parent.setIsLeaf(false);
             }
             parent.addChild(x);
+            x.setParent(parent);
+            parent.updateCornersM(x);
         }
-        parent.calculateCorners();
+        
         if (parent.getChildren().size() > MAX_CHILDREN) {
             parent.handleOverflow();
         }
@@ -275,14 +310,20 @@ public class Mbr {
   private List<Mbr> leafSplit() {
       //Check X axis split and Y axis split, then choose best split
       int n = this.getLeaves().size();
-      int i = 8;
-      int i1 = 12;
+      int i = 44;
+      int i1 = 66;
       int bestPerim = Integer.MAX_VALUE;
       List<Comparator<Point>> comps = getPtComp();
       
       //Iterate through list of comparators?
       List<Point> leaf = this.getLeaves();
+      List<Point> temp1;
       
+      List<Point> temp2;
+      
+      List<Integer> sides1;
+              
+      List<Integer> sides2;   
       List<Point> result1 = new ArrayList<Point>();
       List<Point> result2 = new ArrayList<Point>();
       
@@ -291,13 +332,13 @@ public class Mbr {
           //Sort leaves based on comparator
           leaf.sort(comp);
           
-          List<Point> temp1 = leaf.subList(0, i);
+          temp1 = leaf.subList(0, i);
           
-          List<Point> temp2 = leaf.subList(i1, n);
+          temp2 = leaf.subList(i1, n);
           
-          List<Integer> sides1 = findSides(temp1);
+          sides1 = findSides(temp1);
                   
-          List<Integer> sides2 = findSides(temp2);      
+          sides2 = findSides(temp2);      
           
           int tempPerim = ((sides1.get(0)*2)+(sides1.get(1)*2)) + ((sides2.get(0)*2)+(sides2.get(1)*2));
           
@@ -418,12 +459,22 @@ public class Mbr {
   //Splits inner node in 2
   private List<Mbr> innerSplit() {
       int n = this.getChildren().size();
-      int i = 8;
-      int i1 = 12;
+      int i = 44;
+      int i1 = 66;
       int bestPerim = Integer.MAX_VALUE;
       List<Comparator<Mbr>> comps = getMbrComp();
       
       List<Mbr> children = this.getChildren();
+      
+      List<Mbr> temp1;
+
+      List<Mbr> temp2;
+
+      int p1;
+      
+      int p2; 
+      
+      int tempPerim;
       
       List<Mbr> result1 = new ArrayList<Mbr>();
       List<Mbr> result2 = new ArrayList<Mbr>();
@@ -431,15 +482,15 @@ public class Mbr {
       for (Comparator<Mbr> compy: comps) {
           children.sort(compy);
           
-          List<Mbr> temp1 = children.subList(0, i);
+          temp1 = children.subList(0, i);
 
-          List<Mbr> temp2 = children.subList(i1, n);
+          temp2 = children.subList(i1, n);
 
-          int p1 = findPerim(temp1);
+          p1 = findPerim(temp1);
           
-          int p2 = findPerim(temp2); 
+          p2 = findPerim(temp2); 
           
-          int tempPerim = p1 + p2;
+          tempPerim = p1 + p2;
           
           if (tempPerim < bestPerim) {
               result1 = temp1;
@@ -653,9 +704,6 @@ public class Mbr {
   }
   
   void giveChildren(List<Mbr> mbrs) {
-    if (children == null) {
-      children = new ArrayList<Mbr>();
-    }
     children.addAll(mbrs);
   }
   
@@ -675,10 +723,15 @@ public class Mbr {
    * @return true iff point p is contained within, or on the edge of, this Mbr object.
    */
   public boolean contains(Point p) {
-    if (p.dominates(tl) && br.dominates(p)) {
-      return true;
-    }
-    return false;
+      int x = p.getX();
+      int y = p.getY();
+      
+      if(x >= this.getTl().getX() && x <= this.getBr().getX() 
+              && y >= this.getTl().getY() && y <= this.getBr().getY()) {
+          return true;
+      } else {
+          return false;
+      }
   }
   
   /**

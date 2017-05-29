@@ -83,16 +83,16 @@ public class Test {
 		    
 		    //Add other stuff as stuff goes on
 		    //Runs sequential scan
-		    if (command[0].equals("test")) {
+		    if ((command[0].equals("test"))) {
 		        if(inputPoints.isEmpty()) {
 		            System.out.println("No points loaded");
 		        } else {
-	                System.out.println(sequentialScan(inputPoints) + " millis");
-		        }
-		        
+		            System.out.println(sequentialScan(inputPoints));
+		        } 
 		    //Loads file based on input
 		    } else if ((command[0].equals("load") && (!(command[1].isEmpty())))){
 		        inputPoints = readFile(command[1]);
+		        tree = new RTree();
 		        
 		        //Builds tree
 		        for(Point x : inputPoints) {
@@ -103,25 +103,32 @@ public class Test {
 		    //Loads and runs range query based on input
 		    } else if ((command[0].equals("range") && (!(command[1].isEmpty())) 
 		            && (!(command[2].isEmpty())))) { 
-		        List<Mbr> testRangeQueries = readRangeQueries(command[1]);
-		        //Init range result
-                times.clear();
-                rangeOverall = new LinkedList<List<Point>>();
-                
-		        //read queries, loop through queries, for each, append result to total results
-		        for(Mbr x: testRangeQueries) {
-		            //Clear range result
-	                rangeResult = new LinkedList<Point>();
-		            //Start timer
-		            startTime = System.currentTimeMillis();
-		            rangeQuery(tree.getRoot(), x);
-		            //End timer
-                    endTime = System.currentTimeMillis();
-                    long resultTime = endTime - startTime;
-                    //Add runtime to list of times
-                    times.add(resultTime);
-                    //Adds range result to overall results
-                    rangeOverall.add(rangeResult);
+		        
+		        if(inputPoints.isEmpty()) {
+                    System.out.println("No points loaded");
+                } else {
+                    List<Mbr> testRangeQueries = readRangeQueries(command[1]);
+                    //Init range result
+                    times.clear();
+                    rangeOverall = new LinkedList<List<Point>>();
+                    
+                    //read queries, loop through queries, for each, append result to total results
+                    for(Mbr x: testRangeQueries) {
+                        //Clear range result
+                        rangeResult = new LinkedList<Point>();
+                        //Start timer
+                        startTime = System.currentTimeMillis();
+                        rangeQuery(tree.getRoot(), x);
+                        //End timer
+                        endTime = System.currentTimeMillis();
+                        long resultTime = endTime - startTime;
+                        //Add runtime to list of times
+                        times.add(resultTime);
+                        //Adds range result to overall results
+                        rangeOverall.add(rangeResult);
+                    }
+		        
+		        
 		        }
 		        
 		        //Save file
@@ -131,23 +138,28 @@ public class Test {
 		    //Loads and runs NN query based on input
 		    } else if ((command[0].equals("nn") && (!(command[1].isEmpty()))
 		            && (!(command[2].isEmpty())))) { 
-		        //Read in queries
-		        List<Point> testNNQueries = readNNQueries(command[1]);
-		        times.clear();
-		        nnOverall = new LinkedList<List<Point>>();
-		            //Iterate through all queries and run each query, adding results to the overall result list
-		            for(Point x: testNNQueries) {
-		                //Start timer
-		                startTime = System.currentTimeMillis();
-		                
-		                List<Point> Result = nnQuery(tree.getRoot(), x);
-		                //End timer
-		                endTime = System.currentTimeMillis();
-		                //Add runtime to list of times
-		                times.add(endTime-startTime);
-		                //Add result of individual query to overall list
-		                nnOverall.add(Result);
-		            }
+		        
+		        if(inputPoints.isEmpty()) {
+                    System.out.println("No points loaded");
+                } else {
+                  //Read in queries
+                    List<Point> testNNQueries = readNNQueries(command[1]);
+                    times.clear();
+                    nnOverall = new LinkedList<List<Point>>();
+                        //Iterate through all queries and run each query, adding results to the overall result list
+                    for(Point x: testNNQueries) {
+                        //Start timer
+                        startTime = System.currentTimeMillis();
+                        
+                        List<Point> Result = nnQuery(tree.getRoot(), x);
+                        //End timer
+                        endTime = System.currentTimeMillis();
+                        //Add runtime to list of times
+                        times.add(endTime-startTime);
+                        //Add result of individual query to overall list
+                        nnOverall.add(Result);
+                    }
+                }
 		        
 		        //Save file
 		        saveNN(command[2]);
@@ -266,7 +278,7 @@ public class Test {
 	    		System.out.print("File format error: Rows do not match provided number of points.");
 	    		return null;
 	    	}else {
-	    		System.out.println("\nInput file reading complete");
+	    		System.out.println("\nInput file reading complete\n");
 	    	}
     	}
     	
@@ -371,7 +383,7 @@ public class Test {
     	} catch (IOException e) {
     		System.out.print("I/O Exception: " + e.getMessage());
     	} finally {
-    		System.out.println("\nRange query file reading complete");
+    		System.out.println("\nRange query file reading complete\n");
     	}
     	
     	return result;
@@ -495,6 +507,8 @@ public class Test {
      */
     public static long sequentialScan(List<Point> inputNodes) {
         
+        List<Point> newL = new ArrayList<Point>();
+        
         long startTime = System.currentTimeMillis();
         
         for(Point x:inputNodes) {
@@ -508,6 +522,8 @@ public class Test {
         return result;
     }
     
+    
+    
     /**
      * Returns all points given in a specified range
      * 
@@ -519,7 +535,8 @@ public class Test {
         
         //If leaf mbr, check if leaf points are in range, if yes add to results
         if (node.isLeaf()) {
-            for(Point x:node.getPoints()){
+            System.out.println("Finding");
+            for(Point x: node.getPoints()){
                 if(query.contains(x)) {
                     rangeResult.add(x);
                 }
@@ -569,7 +586,7 @@ public class Test {
             }});
         
         //List of best points, if lower than the first one, remake list, else append to list
-        List<Point> bestPoints = new ArrayList<Point>();
+        List<Point> bestPoints = new LinkedList<Point>();
         
         //Init best distance as max at first
         double bestMin = Double.MAX_VALUE;
@@ -579,8 +596,8 @@ public class Test {
         Mbr current = root;
         
         //Loop while the current best 
-        while(bestMin > target.mindistMbr(current) && (pq.size() > 0)) {
-
+        while(bestMin > target.mindistMbr(current) && current != null) {
+            
             current = pq.poll();
             
             //If no children mbr (leaf mbr), check points and determine best point
@@ -588,7 +605,7 @@ public class Test {
                 for(Point x: current.getPoints()) {
                     if (target.mindistPt(x) < bestMin) {
                         //If a better point, clear list and add x
-                        bestPoints.clear();
+                        bestPoints = new LinkedList<Point>();
                         bestPoints.add(x);
                         bestMin = target.mindistPt(x);
                     } else if(target.mindistPt(x) == bestMin) {
@@ -599,6 +616,7 @@ public class Test {
             } else {
                 //Have child, put all children into the priority queue
                 for(Mbr x: current.getChildren()) {
+                    //Not already explored + is not already in pq
                     if(!(pq.contains(x))) {
                         pq.add(x);
                     }
@@ -630,7 +648,9 @@ public class Test {
                 
                 //Trim end and add time
                 if(build.length() > 0) {
-                    build = build.substring(0, build.length()-2) + " - Time: " + time;
+                    build = build.substring(0, build.length()-2) + " - Time: " + time + " millis";
+                } else {
+                    build = "No points selected" + " - Time: " + time + " millis";
                 }
                 
                 //Write to file
@@ -666,7 +686,9 @@ public class Test {
                 
                 //Trim end and add time
                 if(build.length() > 0) {
-                    build = build.substring(0, build.length()-2) + " - Time: " + time;
+                    build = build.substring(0, build.length()-2) + " - Time: " + time + " millis";
+                } else {
+                    build = "No points selected" + " - Time: " + time + " millis";
                 }
                 
                 //Write to file

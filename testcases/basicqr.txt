@@ -1,11 +1,2 @@
-id_1 x_1 y_1, id_1 x_1 y_1 - Time: 0
-id_2 x_2 y_2 - Time: 0
-id_3 x_3 y_3, id_3 x_3 y_3 - Time: 0
-id_4 x_4 y_4, id_4 x_4 y_4 - Time: 0
-
-
-id_7 x_7 y_7, id_7 x_7 y_7 - Time: 0
-id_8 x_8 y_8, id_8 x_8 y_8 - Time: 0
-id_9 x_9 y_9, id_9 x_9 y_9 - Time: 0
-id_10 x_10 y_10, id_10 x_10 y_10 - Time: 0
+No points selected - Time: 23 millis
  
