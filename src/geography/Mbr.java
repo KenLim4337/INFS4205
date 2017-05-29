@@ -384,67 +384,6 @@ public class Mbr {
       
       return res;
       
-      /*
-      leaf.sort(Point.compareX);
-      
-      List<Point> sx1 = leaf.subList(0, i);
-      
-      List<Point> sx2 = leaf.subList(i1, n);
-      
-      List<Integer> xSides1 = findSides(sx1);
-              
-      List<Integer> xSides2 = findSides(sx2);      
-      
-      bestPerim = ((xSides1.get(0)*2)+(xSides1.get(1)*2)) + ((xSides2.get(0)*2)+(xSides2.get(1)*2));
-      
-      leaf.sort(Point.compareY);
-      
-      List<Point> sy1 = leaf.subList(0, i);
-      
-      List<Point> sy2 = leaf.subList(i1, n);
-      
-      List<Integer> ySides1 = findSides(sy1);
-      
-      List<Integer> ySides2 = findSides(sy2);
-      
-      int yPerim = ((ySides1.get(0)*2)+(ySides1.get(1)*2)) + ((ySides2.get(0)*2)+(ySides2.get(1)*2));
-      
-      if (yPerim < bestPerim) {
-          bestPerim = yPerim;
-          //return Y mbrs
-          result1 = sy1;
-          result2 = sy2;
-      } else if (yPerim == bestPerim) {
-          //if equal, compare area
-          int xArea = (xSides1.get(0) * xSides1.get(1)) + (xSides2.get(0) * xSides2.get(1));
-          int yArea = (ySides1.get(0) * ySides1.get(1)) + (ySides2.get(0) * ySides2.get(1));
-          
-          if (xArea < yArea) {
-              result1 = sx1;
-              result2 = sx2;
-          } else {
-              result1 = sy1;
-              result2 = sy2;
-          }
-      } else {
-          //return X mbrs
-          result1 = sx1;
-          result2 = sx2;
-      }
-      
-      Mbr m1 = new Mbr (this, true, this.tree);
-      m1.givePoints(result1);
-      
-      Mbr m2 = new Mbr (this, true, this.tree);
-      m2.givePoints(result2);
-      
-      
-      List<Mbr> res = new ArrayList<Mbr>();
-      res.add(m1);
-      res.add(m2);
-      
-      return res;
-      */
   }
   
   private List<Comparator<Point>> getPtComp() {

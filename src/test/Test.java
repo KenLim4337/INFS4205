@@ -21,37 +21,6 @@ public class Test {
     public static List<Long> times;
     
 	public static void main(String [] args) {
-	    
-		/*
-        
-        
-		inputPoints = readFile(args[0]);
-		
-		System.out.println(inputToString(inputPoints));
-		
-		System.out.println(inputPoints.get(0).mindistPt(inputPoints.get(2)));
-		
-		List<Point> nnQuery = readNNQueries(args[2]);
-		
-		System.out.println(nnQueryToString(nnQuery));
-		
-        List<Mbr> rangeQuery = readRangeQueries(args[1]);
-		
-        System.out.println(rangeQueryToString(rangeQuery));
-		
-		
-		//Breaking, null pointer exception after more than 3 put in tree
-		for(Point x : inputPoints) {
-		    tree.insert(x);
-		    System.out.println(x + " INSERTED");
-		}
-		
-		System.out.println("END");
-		
-		Mbr root = tree.getRoot();
-	
-		treeScanner(root);
-		*/
 		
 		//Actual code stuff ----------------------------------------------------------
 
@@ -63,7 +32,7 @@ public class Test {
 		tree = new RTree();
 
 	    /**
-	     * Keeps reads user input in command line and responds as appropriate
+	     * Reads user input in command line and responds as appropriate
 	     * 
 	     * Commands:
 	     * exit -> Exits system with error code 0
